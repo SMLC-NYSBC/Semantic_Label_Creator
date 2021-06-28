@@ -31,7 +31,7 @@ class SemanticLabelFromAmira:
 			"r",
 			encoding="iso-8859-1"
 		).read().split("\n")
-		
+	
 	def semantic_label(self):
 		return np.zeros(self.image.shape)
 	
@@ -62,15 +62,27 @@ class SemanticLabelFromAmira:
 		# Find line that start with the directory @.. and select last one
 		# Select all lines between @.. (-1) and number of segments
 		# return an array of number of points belonged to each segment
-		segment_at = str([
-			word for word in self.spatial_graph if word.startswith('POINT { float[3] EdgePointCoordinates }')
+		segments = str([
+			word for word in self.spatial_graph if word.startswith('EDGE { int NumEdgePoints }')
 		])
-		segment_at = "".join((ch if ch in "0123456789" else " ") for ch in segment_at)
-		segment_at = [int(i) for i in segment_at.split()]
-		segment_at = self.spatial_graph.index("@" + str(segment_at[1])) + 1
+		segment_start = "".join((ch if ch in "0123456789" else " ") for ch in segments)
+		segment_start = [int(i) for i in segment_start.split()]
+		segment_start = int(self.spatial_graph.index("@" + str(segment_start[0]))) + 1
 		
+		segments = str([
+			word for word in self.spatial_graph if word.startswith('define EDGE')
+		])
+		segment_finish = "".join((ch if ch in "0123456789" else " ") for ch in segments)
+		segment_finish = [int(i) for i in segment_finish.split()]
+		segment_no = int(segment_finish[0])
+		segment_finish = segment_start + int(segment_finish[0])
 		
-		return "empty"
+		segments = self.spatial_graph[segment_start:segment_finish]
+		df = np.zeros((segment_no, 1), dtype="int")
+		coord = [i.split(' ')[0] for i in segments]
+		df[0:segment_no, 0] = [int(i) for i in coord]
+		
+		return df
 	
 	def find_points(self):
 		# Find line define POINT ... <- number indicate number of points
