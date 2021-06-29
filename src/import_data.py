@@ -33,28 +33,8 @@ class SemanticLabelFromAmira:
 	
 	def semantic_label(self):
 		return np.zeros(self.image.shape)
-	
-	def read_tiff_transformation(self):
-		# This method read the header of ET (.am) file and determines global
-		# transformation for all coordinates
-		
-		et = open(
-			self.src_tiff[:-3] + "am",
-			"r",
-			encoding="iso-8859-1"
-		)
-		
-		lines_in_et = et.read().split("\n")
-		transformation_list = str([
-			word for word in lines_in_et if word.startswith('    BoundingBox')
-		]).split(" ")
-		
-		trans_x, trans_y, trans_z = float(transformation_list[5]), \
-		                            float(transformation_list[7]), \
-		                            float(transformation_list[9])
-		return trans_x, trans_y, trans_z
-	
-	def __find_segments(self):
+
+	def get_segments(self):
 
 		# Find line starting with EDGE { int NumEdgePoints }
 		segments = str([
@@ -115,8 +95,28 @@ class SemanticLabelFromAmira:
 			df[0:points_no, j] = [float(i) for i in coord]
 
 		return df
-	
-	def pixel_size_in_et(self):
+
+	def __read_tiff_transformation(self):
+		# This method read the header of ET (.am) file and determines global
+		# transformation for all coordinates
+
+		et = open(
+			self.src_tiff[:-3] + "am",
+			"r",
+			encoding="iso-8859-1"
+		)
+
+		lines_in_et = et.read().split("\n")
+		transformation_list = str([
+			word for word in lines_in_et if word.startswith('    BoundingBox')
+		]).split(" ")
+
+		trans_x, trans_y, trans_z = float(transformation_list[5]), \
+									float(transformation_list[7]), \
+									float(transformation_list[9])
+		return trans_x, trans_y, trans_z
+
+	def __pixel_size_in_et(self):
 		# If not specified by user, pixel size is first searched in .tif file
 		# if not found than the pixel size is estimated
 
@@ -134,4 +134,15 @@ class SemanticLabelFromAmira:
 			return round(physical_length / pixel_in_z, 2)
 		else:
 			return self.pixel_size
+
+	def get_points(self):
+		pixel_size = self.__pixel_size_in_et()
+		transformation = self.__read_tiff_transformation()
+		points_coord = self.__find_points()
+
+		points_coord[0:len(points_coord), 0] = points_coord[0:len(points_coord),0] - transformation[0]
+		points_coord[0:len(points_coord), 1] = points_coord[0:len(points_coord), 1] - transformation[1]
+		points_coord[0:len(points_coord), 2] = points_coord[0:len(points_coord), 2] - transformation[2]
+
+		return round(points_coord / pixel_size, 0)
 
