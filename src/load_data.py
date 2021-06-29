@@ -78,9 +78,10 @@ class SemanticLabelFromAmira:
 		segment_finish = segment_start + int(segment_finish[0])
 		
 		segments = self.spatial_graph[segment_start:segment_finish]
+		segments = [i.split(' ')[0] for i in segments]
+		
 		df = np.zeros((segment_no, 1), dtype="int")
-		coord = [i.split(' ')[0] for i in segments]
-		df[0:segment_no, 0] = [int(i) for i in coord]
+		df[0:segment_no, 0] = [int(i) for i in segments]
 		
 		return df
 	
