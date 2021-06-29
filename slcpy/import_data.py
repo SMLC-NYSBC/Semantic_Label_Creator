@@ -44,11 +44,10 @@ class ImportDataFromAmira:
             encoding="iso-8859-1"
         ).read().split("\n")
 
-    def semantic_label(self):
+    def empty_semantic_label(self):
         return np.zeros(self.image.shape)
 
     def get_segments(self):
-
         # Find line starting with EDGE { int NumEdgePoints }
         segments = str([
             word for word in self.spatial_graph if word.startswith('EDGE { int NumEdgePoints }')
@@ -79,7 +78,7 @@ class ImportDataFromAmira:
         return df
 
     def __find_points(self):
-
+        # Find line starting with POINT { float[3] EdgePointCoordinates }
         points = str([
             word for word in self.spatial_graph if word.startswith('POINT { float[3] EdgePointCoordinates }')
         ])
@@ -134,8 +133,8 @@ class ImportDataFromAmira:
         # if not found than the pixel size is estimated
 
         # Estimation is done by an assumption that points can be found on the top
-        # and bottom surface
-        # pixel_size = points_dist_in_z_[A] / pixel_no
+        # and the bottom surface
+        # pixel_size = points_dist_in_z[A] / pixel_no[px]
 
         if self.pixel_size is None:
             pixel_in_z = self.image.shape[0]
@@ -149,6 +148,7 @@ class ImportDataFromAmira:
             return self.pixel_size
 
     def get_points(self):
+        # Generate table of all points with coordinates in pixel
         pixel_size = self.__pixel_size_in_et()
         transformation = self.__read_tiff_transformation()
         points_coord = self.__find_points()
