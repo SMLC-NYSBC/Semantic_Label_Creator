@@ -13,6 +13,7 @@
 """
 import numpy as np
 from skimage import io
+from os import path
 
 
 class ImportDataFromAmira:
@@ -27,6 +28,15 @@ class ImportDataFromAmira:
                 break
             except ValueError:
                 print("Directory or input .tiff file is not correct...")
+                break
+
+        while True:
+            try:
+                path.isfile(self.src_tiff[:-3] + "am")
+                break
+            except ValueError:
+                print("Missing corresponding .am file...")
+                break
 
         self.spatial_graph = open(
             src_am,
@@ -147,4 +157,4 @@ class ImportDataFromAmira:
         points_coord[0:len(points_coord), 1] = points_coord[0:len(points_coord), 1] - transformation[1]
         points_coord[0:len(points_coord), 2] = points_coord[0:len(points_coord), 2] - transformation[2]
 
-        return round(points_coord / pixel_size, 0)
+        return points_coord / pixel_size
