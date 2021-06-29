@@ -18,7 +18,6 @@
 import numpy as np
 from skimage import io
 
-
 class SemanticLabelFromAmira:
 	def __init__(self, src_tiff, src_am, pixel_size=None):
 		self.src_tiff = src_tiff
@@ -55,20 +54,19 @@ class SemanticLabelFromAmira:
 		                            float(transformation_list[9])
 		return trans_x, trans_y, trans_z
 	
-	def find_segments(self):
-		# Find line define VERTEX ... <- number indicate number of segments
+	def __find_segments(self):
+
 		# Find line starting with EDGE { int NumEdgePoints }
-		# Find in the line directory that starts with @..
-		# Find line that start with the directory @.. and select last one
-		# Select all lines between @.. (-1) and number of segments
-		# return an array of number of points belonged to each segment
 		segments = str([
 			word for word in self.spatial_graph if word.startswith('EDGE { int NumEdgePoints }')
 		])
 		segment_start = "".join((ch if ch in "0123456789" else " ") for ch in segments)
 		segment_start = [int(i) for i in segment_start.split()]
+
+		# Find in the line directory that starts with @..
 		segment_start = int(self.spatial_graph.index("@" + str(segment_start[0]))) + 1
-		
+
+		# Find line define EDGE ... <- number indicate number of segments
 		segments = str([
 			word for word in self.spatial_graph if word.startswith('define EDGE')
 		])
@@ -76,30 +74,64 @@ class SemanticLabelFromAmira:
 		segment_finish = [int(i) for i in segment_finish.split()]
 		segment_no = int(segment_finish[0])
 		segment_finish = segment_start + int(segment_finish[0])
-		
+
+		# Select all lines between @.. (+1) and number of segments
 		segments = self.spatial_graph[segment_start:segment_finish]
 		segments = [i.split(' ')[0] for i in segments]
-		
+
+		# return an array of number of points belonged to each segment
 		df = np.zeros((segment_no, 1), dtype="int")
 		df[0:segment_no, 0] = [int(i) for i in segments]
 		
 		return df
-	
-	def find_points(self):
-		# Find line define POINT ... <- number indicate number of points
-		# Find line starting with POINT { float[3] EdgePointCoordinates }
+
+	def __find_points(self):
+
+		points = str([
+			word for word in self.spatial_graph if word.startswith('POINT { float[3] EdgePointCoordinates }')
+		])
 		# Find in the line directory that starts with @..
+		points_start = "".join((ch if ch in "0123456789" else " ") for ch in points)
+		points_start = [int(i) for i in points_start.split()]
 		# Find line that start with the directory @.. and select last one
+		points_start = int(self.spatial_graph.index("@" + str(points_start[1]))) + 1
+
+		# Find line define POINT ... <- number indicate number of points
+		points = str([
+			word for word in self.spatial_graph if word.startswith('define POINT')
+		])
+		points_finish = "".join((ch if ch in "0123456789" else " ") for ch in points)
+		points_finish = [int(i) for i in points_finish.split()][0]
+		points_no = points_finish
+		points_finish = points_start + points_finish
+
 		# Select all lines between @.. (-1) and number of points
+		points = self.spatial_graph[points_start:points_finish]
+
 		# return an array of all points coordinates in pixel
-		
-		return "empty"
+		df = np.zeros((points_no, 3), dtype="float")
+		for j in range(3):
+			coord = [i.split(' ')[j] for i in points]
+			df[0:points_no, j] = [float(i) for i in coord]
+
+		return df
 	
 	def pixel_size_in_et(self):
+		# If not specified by user, pixel size is first searched in .tif file
+		# if not found than the pixel size is estimated
+
+		# Estimation is done by an assumption that points can be found on the top
+		# and bottom surface
+		# pixel_size = points_dist_in_z_[A] / pixel_no
+
 		if self.pixel_size is None:
-			# Get max value from Z coordinates after transformation, and
-			# divided by self.image[1]
-			
-			return pixel_size
+			pixel_in_z = self.image.shape[0]
+			z_coord = self.__find_points()
+			min_point_in_z = min(z_coord[0:len(z_coord),2])
+			max_point_in_z = max(z_coord[0:len(z_coord),2])
+			physical_length = abs(max_point_in_z - min_point_in_z) # in [Angstrom]
+
+			return round(physical_length / pixel_in_z, 2)
 		else:
 			return self.pixel_size
+
