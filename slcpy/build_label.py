@@ -8,5 +8,3 @@
     :author Robert Kiewisz
 
 """
-
-

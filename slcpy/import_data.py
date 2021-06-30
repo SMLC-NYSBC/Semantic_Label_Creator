@@ -22,21 +22,13 @@ class ImportDataFromAmira:
         self.src_am = src_am
         self.pixel_size = pixel_size
 
-        while True:
-            try:
-                self.image = io.imread(self.src_tiff)
-                break
-            except ValueError:
-                print("Directory or input .tiff file is not correct...")
-                break
+        try:
+            self.image = io.imread(self.src_tiff)
+        except RuntimeWarning:
+            raise Warning("Directory or input .tiff file is not correct...")
 
-        while True:
-            try:
-                path.isfile(self.src_tiff[:-3] + "am")
-                break
-            except ValueError:
-                print("Missing corresponding .am file...")
-                break
+        if not path.isfile(self.src_tiff[:-3] + "am"):
+            raise Warning("Missing corresponding .am file...")
 
         self.spatial_graph = open(
             src_am,
