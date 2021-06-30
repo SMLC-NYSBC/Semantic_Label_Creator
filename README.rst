@@ -7,9 +7,10 @@ Semantic Label Creator [slcpy]
 .. image:: https://img.shields.io/travis/RRobert92/slcpy.svg
         :target: https://travis-ci.com/RRobert92/slcpy
 
-.. image:: https://readthedocs.org/projects/slcpy/badge/?version=latest
-        :target: https://semantic-label-creator.readthedocs.io/en/latest/?version=latest
+.. image:: https://readthedocs.org/projects/semantic-label-creator/badge/?version=latest
+        :target: https://semantic-label-creator.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
+
 
 .. image:: https://www.codefactor.io/repository/github/rrobert92/semantic_label_creator/badge
 
