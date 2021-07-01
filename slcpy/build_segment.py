@@ -1,4 +1,5 @@
 """
+
     Module to build a continues segment in given 3D frame
 
     Module: interpolation_1D
@@ -18,16 +19,10 @@ import numpy as np
 
 # Interpolate 1D axis
 def interpolation_1D(start, stop, max_len):
-    if int(start) < int(stop):
-        points_seq = np.linspace(
-            int(start), int(stop),
-            max_len
-        ).round()
-    else:
-        points_seq = np.linspace(
-            int(start), int(stop),
-            max_len
-        ).round()
+    points_seq = np.linspace(
+        int(start), int(stop),
+        max_len
+    ).round()
 
     return points_seq
 
