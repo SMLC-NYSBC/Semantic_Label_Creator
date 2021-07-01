@@ -8,3 +8,4 @@ History
 * Standardized project entry with cookecutter
 * Set up loading of standard data types *.tiff, *.am
 * Transform Amira coordinates into pixel value
+* Interpolate pixel coordinates and build semantic label

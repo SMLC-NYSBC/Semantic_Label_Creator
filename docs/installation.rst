@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/RRobert92/slcpy
+    $ git clone git://github.com/RRobert92/Semantic_Label_Creator
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl -OJL https://github.com/RRobert92/slcpy/tarball/master
+    $ curl -OJL https://github.com/RRobert92/Semantic_Label_Creator/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/RRobert92/slcpy
-.. _tarball: https://github.com/RRobert92/slcpy/tarball/master
+.. _Github repo: https://github.com/RRobert92/Semantic_Label_Creator
+.. _tarball: https://github.com/RRobert92/Semantic_Label_Creator/tarball/master

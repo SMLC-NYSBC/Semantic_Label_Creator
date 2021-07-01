@@ -11,9 +11,10 @@
     :author Robert Kiewisz
 
 """
+from os import path
+
 import numpy as np
 from skimage import io
-from os import path
 
 
 class ImportDataFromAmira:
