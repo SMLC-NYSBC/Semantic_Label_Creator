@@ -121,7 +121,7 @@ class ImportDataFromAmira:
                                     float(transformation_list[9])
         return trans_x, trans_y, trans_z
 
-    def __pixel_size_in_et(self):
+    def pixel_size_in_et(self):
         # If not specified by user, pixel size is first searched in .tif file
         # if not found than the pixel size is estimated
 
@@ -142,7 +142,7 @@ class ImportDataFromAmira:
 
     def get_points(self):
         # Generate table of all points with coordinates in pixel
-        pixel_size = self.__pixel_size_in_et()
+        pixel_size = self.pixel_size_in_et()
         transformation = self.__read_tiff_transformation()
         points_coord = self.__find_points()
 
