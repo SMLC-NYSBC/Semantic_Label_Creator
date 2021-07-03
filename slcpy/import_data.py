@@ -38,7 +38,7 @@ class ImportDataFromAmira:
         ).read().split("\n")
 
     def empty_semantic_label(self):
-        return np.zeros(self.image.shape)
+        return np.zeros(self.image.shape, 'int8')
 
     def get_segments(self):
         # Find line starting with EDGE { int NumEdgePoints }

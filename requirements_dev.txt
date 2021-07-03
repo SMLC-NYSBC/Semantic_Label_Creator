@@ -14,3 +14,7 @@ click==8.0.1
 scikit-image==0.18.1
 setuptools==52.0.0
 numpy==1.21.0
+slcpy==0.1.0
+requests==2.25.1
+tifffile==2021.7.2
+tqdm==4.61.1

@@ -20,12 +20,12 @@
 import numpy as np
 
 
-def build_circle(x0, y0, circle_size, pixel_size):
+def build_circle(x0, y0, circle_size, pixel_size, img_size):
     radius_squared = circle_size / pixel_size
     circle = np.zeros((0, 2))
 
-    for x in range(1001):
-        for y in range(1001):
+    for x in range(img_size):
+        for y in range(img_size):
             dx = x - x0
             dy = y - y0
             distance_squared = dx * dx + dy * dy
