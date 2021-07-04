@@ -1,8 +1,9 @@
 """
+
     Class module to load 3D .tif file
     :param str dir_path: path direction of the input file *.tif
-    :param str pixel_size: pixel size in nm
-    :param int circle_size: size of a circle that is drawn to the label mask in nm
+    :param str pixel_size: pixel size in Angstrom
+    :param int circle_size: size of a circle that is drawn to the label mask in Angstrom
 
     :author Robert Kiewisz
 

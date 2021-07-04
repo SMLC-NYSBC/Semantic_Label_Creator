@@ -1,7 +1,9 @@
 """
+
     Main module
 
     :author Robert Kiewisz
+
 """
 import os
 import shutil
@@ -27,11 +29,11 @@ from slcpy.slcpy import slcpy
 @click.option('-px', '--pixel_size',
               default=None,
               type=int,
-              help='images pixel size in nm',
+              help='images pixel size in Angstrom',
               show_default=True)
 @click.option('-d', '--circle_size',
-              default=125,
-              help='size of a circle in nm that would become label shape',
+              default=250,
+              help='size of a circle in Angstrom that would become label shape',
               show_default=True)
 def main(dir_path, output, pixel_size, circle_size):
     if os.path.isdir(output):

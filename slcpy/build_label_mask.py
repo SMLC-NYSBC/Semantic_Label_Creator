@@ -2,7 +2,7 @@
 
     Module to construct shape of a label
 
-    :param int diameter: radius or a circle in nm
+    :param int diameter: radius or a circle in Angstrom
     :param int pixel_size: size of a pixel
 
     :author Robert Kiewisz
