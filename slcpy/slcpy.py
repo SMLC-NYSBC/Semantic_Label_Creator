@@ -7,12 +7,13 @@
     :author Robert Kiewisz
 
 """
+from time import sleep
+
+from tqdm import tqdm
+
 from slcpy.build_label_mask import *
 from slcpy.build_segment import *
 from slcpy.import_data import *
-
-from time import sleep
-from tqdm import tqdm
 
 
 def slcpy(dir_path, pixel_size=None, circle_size=125):
@@ -29,7 +30,6 @@ def slcpy(dir_path, pixel_size=None, circle_size=125):
     segments = img.get_segments()
     points = img.get_points().round()
     circle_shape = build_circle_v2(circle_size, pixel_size)
-    circle_dim = round(len(circle_shape)/2)
 
     for i in tqdm(range(len(segments))):
         sleep(0.001)
@@ -40,10 +40,12 @@ def slcpy(dir_path, pixel_size=None, circle_size=125):
 
         for j in range(len(MT)):
             if len(label_mask) != int(MT[j, 2]):
+                circle_dim = (len(circle_shape) - 1) / 2
+
                 x0, x1 = (int(MT[j, 0] - circle_dim - 1), int(MT[j, 0] + circle_dim))
                 y0, y1 = (int(MT[j, 1] - circle_dim - 1), int(MT[j, 1] + circle_dim))
 
-                if label_mask[int(MT[j, 2]), y0:y1,  x0:x1].shape == circle_shape.shape:
-                    label_mask[int(MT[j, 2]), y0:y1,  x0:x1] = circle_shape
+                if label_mask[int(MT[j, 2]), y0:y1, x0:x1].shape == circle_shape.shape:
+                    label_mask[int(MT[j, 2]), y0:y1, x0:x1] = circle_shape
 
     return label_mask

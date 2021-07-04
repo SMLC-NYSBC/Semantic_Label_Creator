@@ -2,7 +2,7 @@
 
     Module to construct shape of a label
 
-    :param int radius: radius or a circle in nm
+    :param int diameter: radius or a circle in nm
     :param int pixel_size: size of a pixel
 
     :author Robert Kiewisz
@@ -11,18 +11,20 @@
 import numpy as np
 
 
-def build_circle_v2(radius, pixel_size):
-    dim = round(radius / pixel_size)
+def build_circle_v2(diameter, pixel_size):
+    dim = round(diameter / pixel_size)
+    if dim % 2 == 0:
+        dim = dim + 1
+
     circle = np.zeros((dim, dim))
-    x0, y0 = (round((dim / 2)), round((dim / 2)))
+    x0, y0 = (round(int(len(circle) / 2)), round(int(len(circle) / 2)))
 
     for x in range(dim):
-        dx = int(x0 - x)
+        dx = int(x - x0)
         for y in range(dim):
-            dy = int(y0 - y)
-            distance_squared = dx*dx + dy*dy
-
-            if distance_squared <= dim:
+            dy = int(y - y0)
+            distance_squared = (dx * dx + dy * dy) ** .5
+            if distance_squared <= dim / 2:
                 circle[x, y] = 1
 
     return circle

@@ -5,14 +5,15 @@
 """
 import os
 import shutil
+from time import sleep
+
 import click
 import numpy as np
-
 from tifffile import tifffile
+from tqdm import tqdm
+
 from slcpy.slcpy import slcpy
 
-from time import sleep
-from tqdm import tqdm
 
 @click.command()
 @click.option('-dir', '--dir_path',
@@ -56,6 +57,7 @@ def main(dir_path, output, pixel_size, circle_size):
                 os.path.join(output, file[:-3] + r'_mask.tif'),
                 np.array(label_mask, 'int8')
             )
+
 
 if __name__ == '__main__':
     main()
