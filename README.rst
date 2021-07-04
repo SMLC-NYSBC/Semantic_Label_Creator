@@ -3,10 +3,10 @@ Semantic Label Creator [slcpy]
 ==============================
 
 .. image:: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
-        :target: https://img.shields.io/github/v/release/RRobert92
+        :target: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
 
 .. image:: https://img.shields.io/travis/RRobert92/slcpy.svg
-        :target: https://img.shields.io/github/v/release/RRobert92
+        :target: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
 
 .. image:: https://readthedocs.org/projects/semantic-label-creator/badge/?version=latest
         :target: https://semantic-label-creator.readthedocs.io/en/latest/?badge=latest
