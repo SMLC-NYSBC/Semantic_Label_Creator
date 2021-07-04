@@ -1,6 +1,6 @@
 """
     Class module to load 3D .tif file
-    :param str path_dir: path direction of the input file *.tif
+    :param str dir_path: path direction of the input file *.tif
     :param str pixel_size: pixel size in nm
     :param int circle_size: size of a circle that is drawn to the label mask in nm
 
@@ -15,10 +15,10 @@ from time import sleep
 from tqdm import tqdm
 
 
-def slcpy(path_dir, pixel_size=None, circle_size=250):
+def slcpy(dir_path, pixel_size=None, circle_size=125):
     img = ImportDataFromAmira(
-        path_dir,
-        path_dir[:-3] + r"CorrelationLines.am",
+        dir_path,
+        dir_path[:-3] + r"CorrelationLines.am",
         pixel_size
     )
 
@@ -28,6 +28,8 @@ def slcpy(path_dir, pixel_size=None, circle_size=250):
     label_mask = img.empty_semantic_label()
     segments = img.get_segments()
     points = img.get_points().round()
+    circle_shape = build_circle_v2(circle_size, pixel_size)
+    circle_dim = round(len(circle_shape)/2)
 
     for i in tqdm(range(len(segments))):
         sleep(0.001)
@@ -38,14 +40,10 @@ def slcpy(path_dir, pixel_size=None, circle_size=250):
 
         for j in range(len(MT)):
             if len(label_mask) != int(MT[j, 2]):
-                label_mask = draw_circle(build_circle(int(MT[j, 0]),
-                                                      int(MT[j, 1]),
-                                                      circle_size,
-                                                      pixel_size,
-                                                      len(label_mask[0,])
-                                                      ),
-                                         int(MT[j, 2]),
-                                         label_mask
-                                         )
+                x0, x1 = (int(MT[j, 0] - circle_dim - 1), int(MT[j, 0] + circle_dim))
+                y0, y1 = (int(MT[j, 1] - circle_dim - 1), int(MT[j, 1] + circle_dim))
+
+                if label_mask[int(MT[j, 2]), y0:y1,  x0:x1].shape == circle_shape.shape:
+                    label_mask[int(MT[j, 2]), y0:y1,  x0:x1] = circle_shape
 
     return label_mask
