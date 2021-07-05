@@ -8,6 +8,7 @@
     :author Robert Kiewisz
 
 """
+import imagecodecs
 from time import sleep
 
 from tqdm import tqdm
@@ -30,7 +31,8 @@ def slcpy(dir_path, pixel_size=None, circle_size=125):
     label_mask = img.empty_semantic_label()
     segments = img.get_segments()
     points = img.get_points().round()
-    circle_shape = build_circle_v2(circle_size, pixel_size)
+    #circle_shape = build_circle_v2(circle_size, pixel_size)
+    r = round((circle_size / 2) / pixel_size)
 
     for i in tqdm(range(len(segments))):
         sleep(0.001)
@@ -39,14 +41,9 @@ def slcpy(dir_path, pixel_size=None, circle_size=125):
         stop_point = start_point + int(segments[i])
         MT = interpolation_3D(points[start_point:stop_point])
 
-        for j in range(len(MT)):
-            if len(label_mask) != int(MT[j, 2]):
-                circle_dim = (len(circle_shape) - 1) / 2
-
-                x0, x1 = (int(MT[j, 0] - circle_dim - 1), int(MT[j, 0] + circle_dim))
-                y0, y1 = (int(MT[j, 1] - circle_dim - 1), int(MT[j, 1] + circle_dim))
-
-                if label_mask[int(MT[j, 2]), y0:y1, x0:x1].shape == circle_shape.shape:
-                    label_mask[int(MT[j, 2]), y0:y1, x0:x1] = circle_shape
+        for j in range(len(MT)-1):
+            c0 = MT[j, :3]
+            c1 = MT[j+1, :3]
+            label_mask = draw_label(r, c0, c1, label_mask)
 
     return label_mask

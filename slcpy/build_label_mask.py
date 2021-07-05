@@ -1,17 +1,51 @@
 """
 
-    Module to construct shape of a label
+    Module draw_label to construct shape of a label
 
-    :param int diameter: radius or a circle in Angstrom
-    :param int pixel_size: size of a pixel
+    :param int r: radius of a circle in Angstrom
+    :param int c0: first point for interpolation
+    :param int c1: second point for interpolation
+    :param array label_mask: array of a mask on which circle is drawn
 
     :author Robert Kiewisz
 
 """
 import numpy as np
+from numpy.linalg import norm
+import skimage.draw
+
+
+def vector_angle(v, u):
+    return np.arccos(norm(np.dot(v, u)) / (norm(v) + norm(u)))
+
+
+def draw_label(r, c0, c1, label_mask):
+    c = c1 - c0
+
+    x, y, z = np.eye(3)
+
+    minor_axis = r
+    major_axis = r
+
+    alpha = vector_angle(x, c0 + c)
+
+    nz, ny, nx = label_mask.shape
+
+    for i in range(int(c0[2]), int(c1[2])):
+        lam = - (c0[2] - i) / c[2]
+        p = c0 + c * lam
+        y, x = skimage.draw.ellipse(p[1], p[0], major_axis, minor_axis, shape=(ny, nx), rotation=alpha)
+        label_mask[i, y, x] = 1
+
+    return label_mask
 
 
 def build_circle_v2(diameter, pixel_size):
+    # Module to construct shape of a label
+    #
+    # :param int diameter: radius or a circle in Angstrom
+    # :param int pixel_size: size of a pixel
+
     dim = round(diameter / pixel_size)
     if dim % 2 == 0:
         dim = dim + 1
