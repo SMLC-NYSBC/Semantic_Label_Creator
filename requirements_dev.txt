@@ -12,7 +12,7 @@ click==8.0.1
 
 # Production
 scikit-image==0.18.2
-setuptools==52.0.0
+setuptools==57.1.0
 numpy==1.21.0
 requests==2.25.1
 tifffile==2021.7.2
