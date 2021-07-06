@@ -7,6 +7,7 @@
 """
 import os
 import shutil
+import glob
 from time import sleep
 
 import click
@@ -37,8 +38,16 @@ from slcpy.slcpy import slcpy
               show_default=True)
 def main(dir_path, output, pixel_size, circle_size):
     if os.path.isdir(output):
-        os.rename(output, output + r'_old')
-        os.mkdir(output)
+        try:
+            os.rename(output, dir_path + r'\output_old')
+            os.mkdir(output)
+        except Exception:
+            print("Folder for the output data already exist... Data copied to output_old."
+                  "Output folder will be overwrite...")
+            shutil.rmtree(dir_path + r'\output_old')
+            os.rename(output, dir_path + r'\output_old')
+            os.mkdir(output)
+            pass
     else:
         os.mkdir(output)
 

@@ -11,31 +11,32 @@
 
 """
 import numpy as np
-from numpy.linalg import norm
-import skimage.draw
-
-
-def vector_angle(v, u):
-    return np.arccos(norm(np.dot(v, u)) / (norm(v) + norm(u)))
+from skimage import draw
 
 
 def draw_label(r, c0, c1, label_mask):
-    c = c1 - c0
-
-    x, y, z = np.eye(3)
-
-    minor_axis = r
-    major_axis = r
-
-    alpha = vector_angle(x, c0 + c)
-
     nz, ny, nx = label_mask.shape
 
-    for i in range(int(c0[2]), int(c1[2])):
-        lam = - (c0[2] - i) / c[2]
-        p = c0 + c * lam
-        y, x = skimage.draw.ellipse(p[1], p[0], major_axis, minor_axis, shape=(ny, nx), rotation=alpha)
-        label_mask[i, y, x] = 1
+    if int(c0[2]) > int(c1[2]):
+        dz = range(int(c1[2]), int(c0[2] + 1))
+    else:
+        dz = range(int(c0[2]), int(c1[2] + 1))
+
+    if int(c0[1]) > int(c1[1]):
+        dy = range(int(c1[1]), int(c0[1] + 1))
+    else:
+        dy = range(int(c0[1]), int(c1[1] + 1))
+
+    if int(c0[0]) > int(c1[0]):
+        dx = range(int(c1[0]), int(c0[0] + 1))
+    else:
+        dx = range(int(c0[0]), int(c1[0] + 1))
+
+    for x in list(dx):
+        for y in list(dy):
+            for z in list(dz):
+                cy, cx = draw.ellipse(y, x, r, r, shape=(ny, nx))
+                label_mask[z, cy, cx] = 1
 
     return label_mask
 
