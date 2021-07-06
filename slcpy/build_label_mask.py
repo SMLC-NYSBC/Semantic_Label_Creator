@@ -20,7 +20,10 @@ def draw_label(r, c0, c1, label_mask):
     if int(c0[2]) > int(c1[2]):
         dz = range(int(c1[2]), int(c0[2] + 1))
     else:
-        dz = range(int(c0[2]), int(c1[2] + 1))
+        if c1[2] != nz:
+            dz = range(int(c0[2]), int(c1[2] + 1))
+        else:
+            dz = range(int(c0[2]), int(c1[2]))
 
     if int(c0[1]) > int(c1[1]):
         dy = range(int(c1[1]), int(c0[1] + 1))

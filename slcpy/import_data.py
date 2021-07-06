@@ -111,7 +111,7 @@ class ImportDataFromAmira:
             encoding="iso-8859-1"
         )
 
-        lines_in_et = et.read().split("\n")
+        lines_in_et = et.read(10000).split("\n")
         transformation_list = str([
             word for word in lines_in_et if word.startswith('    BoundingBox')
         ]).split(" ")
