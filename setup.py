@@ -49,6 +49,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/RRobert92/Semantic_Label_Creator',
-    version='0.1.4',
+    version='0.1.5',
     zip_safe=False,
 )
