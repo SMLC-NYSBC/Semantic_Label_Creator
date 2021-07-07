@@ -12,9 +12,9 @@ from time import sleep
 
 from tqdm import tqdm
 
-from build_label_mask import draw_label
-from build_segment import interpolation_3D
-from import_data import ImportDataFromAmira
+from slcpy.build_label_mask import draw_label
+from slcpy.build_segment import interpolation_3D
+from slcpy.import_data import ImportDataFromAmira
 
 
 def slcpy(dir_path, pixel_size=None, circle_size=125):

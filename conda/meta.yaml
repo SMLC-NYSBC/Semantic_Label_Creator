@@ -6,7 +6,7 @@ package:
 
 
 source:
-  path: ..
+  path: .
 
 build:
   number: 0
@@ -14,24 +14,24 @@ build:
 
 requirements:
   build:
-    -python
-    -setuptools==52.0.0
-    -click==8.0.1
-    -scikit-image==0.18.1
-    -numpy==1.21.0
-    -tifffile==2021.7.2
-    -tqdm==4.61.1
-    -imagecodecs==2021.6.8
+    - python
+    - setuptools==52.0.0
+    - click==8.0.1
+    - scikit-image==0.18.1
+    - numpy==1.20.2
+    - tifffile==2021.7.2
+    - tqdm==4.61.1
+    - imagecodecs==2021.6.8
 
   run:
-    -python
-    -setuptools==52.0.0
-    -click==8.0.1
-    -scikit-image==0.18.1
-    -numpy==1.21.0
-    -tifffile==2021.7.2
-    -tqdm==4.61.1
-    -imagecodecs==2021.6.8
+    - python
+    - setuptools==52.0.0
+    - click==8.0.1
+    - scikit-image==0.18.1
+    - numpy==1.20.2
+    - tifffile==2021.7.2
+    - tqdm==4.61.1
+    - imagecodecs==2021.6.8
 
 about:
   home: {{ data['url'] }}
