@@ -4,7 +4,7 @@ Semantic Label Creator [slcpy]
 
 .. image:: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
         :target: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
-        
+
 .. image:: https://readthedocs.org/projects/semantic-label-creator/badge/?version=latest
         :target: https://semantic-label-creator.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
@@ -20,7 +20,6 @@ Python package to decode Amira 3D coordinate spatial graphs into semantic label 
 Features
 --------
 * Load Amira spatial graph to transform 3D coordinates into semantic label mask
-* TODO: Transform 3D *.tif semantic label mask back into *.am Amira spatial graph
 
 Credits
 -------
