@@ -40,6 +40,7 @@ setup(
     },
     install_requires=requirements,
     license="GNU General Public License v3",
+    long_description_content_type='text/x-rst',
     long_description=readme,
     include_package_data=True,
     keywords='slcpy',
