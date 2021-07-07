@@ -35,7 +35,6 @@ from slcpy.main import slcpy
               default=250,
               help='size of a circle in Angstrom that would become label shape',
               show_default=True)
-@click.version_option(__version__)
 def main(dir_path, output, pixel_size, circle_size):
     if os.path.isdir(output):
         try:
