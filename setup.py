@@ -10,7 +10,14 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['click>=7.0', ]
+requirements = ['click==8.0.1',
+                'setuptools==57.1.0',
+                'scikit-image==0.18.2',
+                'numpy==1.21.0',
+                'tifffile==2021.7.2',
+                'tqdm == 4.61.1',
+                'imagecodecs == 2021.6.8',
+                ]
 
 test_requirements = []
 
@@ -41,6 +48,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/RRobert92/Semantic_Label_Creator',
-    version='0.1.0',
+    version='0.1.1',
     zip_safe=False,
 )

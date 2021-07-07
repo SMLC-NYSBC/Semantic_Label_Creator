@@ -116,9 +116,11 @@ class ImportDataFromAmira:
             word for word in lines_in_et if word.startswith('    BoundingBox')
         ]).split(" ")
 
-        trans_x, trans_y, trans_z = float(transformation_list[5]), \
-                                    float(transformation_list[7]), \
-                                    float(transformation_list[9])
+        trans_x, trans_y, trans_z = (
+            float(transformation_list[5]),
+            float(transformation_list[7]),
+            float(transformation_list[9])
+        )
         return trans_x, trans_y, trans_z
 
     def pixel_size_in_et(self):

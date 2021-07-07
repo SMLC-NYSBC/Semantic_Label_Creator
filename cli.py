@@ -7,7 +7,6 @@
 """
 import os
 import shutil
-import glob
 from time import sleep
 
 import click

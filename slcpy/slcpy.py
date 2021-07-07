@@ -8,14 +8,13 @@
     :author Robert Kiewisz
 
 """
-import imagecodecs
 from time import sleep
 
 from tqdm import tqdm
 
-from slcpy.build_label_mask import *
-from slcpy.build_segment import *
-from slcpy.import_data import *
+from slcpy.build_label_mask import draw_label
+from slcpy.build_segment import interpolation_3D
+from slcpy.import_data import ImportDataFromAmira
 
 
 def slcpy(dir_path, pixel_size=None, circle_size=125):
@@ -31,7 +30,7 @@ def slcpy(dir_path, pixel_size=None, circle_size=125):
     label_mask = img.empty_semantic_label()
     segments = img.get_segments()
     points = img.get_points().round()
-    #circle_shape = build_circle_v2(circle_size, pixel_size)
+    # circle_shape = build_circle_v2(circle_size, pixel_size)
     r = round((circle_size / 2) / pixel_size)
 
     for i in tqdm(range(len(segments))):

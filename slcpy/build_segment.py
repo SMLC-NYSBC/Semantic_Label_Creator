@@ -22,7 +22,8 @@ import numpy as np
 # Interpolate 1D axis
 def interpolation_1D(start, stop, max_len):
     points_seq = np.linspace(
-        int(start), int(stop),
+        int(start),
+        int(stop),
         max_len
     ).round()
 
@@ -71,4 +72,3 @@ def interpolation_3D(points):
                                      )
 
     return interpolated
-
