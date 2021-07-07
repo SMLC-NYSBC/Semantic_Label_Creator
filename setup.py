@@ -40,7 +40,7 @@ setup(
     },
     install_requires=requirements,
     license="GNU General Public License v3",
-    long_description="",
+    long_description="Python package to decode Amira 3D coordinate spatial graphs into semantic label mask",
     include_package_data=True,
     keywords='slcpy',
     name='slcpy',
