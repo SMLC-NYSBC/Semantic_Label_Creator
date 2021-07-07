@@ -14,7 +14,7 @@ import numpy as np
 from tifffile import tifffile
 from tqdm import tqdm
 
-from slcpy.slcpy import slcpy
+from slcpy import slcpy
 
 
 @click.command()
