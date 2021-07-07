@@ -6,13 +6,12 @@ Usage
 
 To use Semantic_Label_Creator in a project::
 
-    import slcpy
-    label_mask = slcpy.slcpy(dir_path, pixel_size=None, circle_size=125)
+    from slcpy.main import slcpy
+    label_mask = slcpy(dir_path, pixel_size=None, circle_size=250)
 
 or with terminal::
 
-    py cly.py --help
-    py cly.py -dir -o -px -d
+    slcpy -dir -o -px -d
 
  string [-dir] directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'
