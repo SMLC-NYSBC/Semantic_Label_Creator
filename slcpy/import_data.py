@@ -130,7 +130,7 @@ class ImportDataFromAmira:
         # pixel_size = points_dist_in_z[A] / pixel_no[px]
 
         if self.pixel_size is None:
-            pixel_in_z = self.image.shape[0]
+            pixel_in_z = int(self.image.shape[0] - 1)
             z_coord = self.__find_points()
             min_point_in_z = min(z_coord[0:len(z_coord), 2])
             max_point_in_z = max(z_coord[0:len(z_coord), 2])
