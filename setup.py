@@ -3,7 +3,6 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
-from slcpy._version import __version__
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -50,6 +49,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/RRobert92/Semantic_Label_Creator',
-    version=__version__,
+    version="0.1.6",
     zip_safe=False,
 )

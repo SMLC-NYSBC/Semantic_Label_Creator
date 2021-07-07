@@ -15,7 +15,6 @@ from tifffile import tifffile
 from tqdm import tqdm
 
 from slcpy.main import slcpy
-from _version import __version__
 
 
 @click.command()
