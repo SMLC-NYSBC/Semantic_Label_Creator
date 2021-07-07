@@ -40,7 +40,7 @@ setup(
     },
     install_requires=requirements,
     license="GNU General Public License v3",
-    long_description=readme + '\n\n' + history,
+    long_description="",
     include_package_data=True,
     keywords='slcpy',
     name='slcpy',
@@ -48,6 +48,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/RRobert92/Semantic_Label_Creator',
-    version='0.1.1',
+    version='0.1.2',
     zip_safe=False,
 )
