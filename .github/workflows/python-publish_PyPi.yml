@@ -6,12 +6,11 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: PyPI & Conda 🐍
+name: PyPI publish 🐍
 
 on:
-  push:
-    branches:
-    - main
+  release:
+    types: [published]
 
 jobs:
   deploy:
