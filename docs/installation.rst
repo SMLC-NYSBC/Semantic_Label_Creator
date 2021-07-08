@@ -34,12 +34,6 @@ You can either clone the public repository:
 
     $ git clone git://github.com/RRobert92/Semantic_Label_Creator
 
-Or download the `tarball`_:
-
-.. code-block:: console
-
-    $ curl -OJL https://github.com/RRobert92/Semantic_Label_Creator/tarball/master
-
 Once you have a copy of the source, you can install it with:
 
 .. code-block:: console
