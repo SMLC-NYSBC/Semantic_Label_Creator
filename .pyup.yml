@@ -13,7 +13,7 @@ schedule: "every week"
 # configure updates globally
 # default: all
 # allowed: all, insecure, False
-update: all
+update: False
 
 # search for requirement files
 # default: True

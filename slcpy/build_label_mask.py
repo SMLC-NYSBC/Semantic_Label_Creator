@@ -10,7 +10,6 @@
     :author Robert Kiewisz
 
 """
-import numpy as np
 from skimage import draw
 
 
@@ -90,19 +89,3 @@ def draw_label(r, c0, c1, label_mask):
 #                                    axis=0
 #                                    )
 #     return circle
-
-
-# Module: draw_circle
-# :param array circle: output from build_circle() method
-# :param int z: Z dimension on which circle should be drawn
-# :param array label_mask: array to which circle should be added
-#
-# def draw_circle(circle, z, label_mask):
-#     for i in range(len(circle)):
-#         x = int(circle[i, 0])
-#         y = int(circle[i, 1])
-#
-#         if label_mask[z, x, y] != 1:
-#             label_mask[z, x, y] = 1
-#
-#     return label_mask
