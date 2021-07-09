@@ -13,7 +13,7 @@ from time import sleep
 from tqdm import tqdm
 
 from slcpy.build_label_mask import draw_label
-from slcpy.build_segment import interpolation_3D
+from slcpy.interpolation import interpolation_3D
 from slcpy.import_data import ImportDataFromAmira
 
 
