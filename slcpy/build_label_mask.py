@@ -44,28 +44,28 @@ def draw_label(r, c0, c1, label_mask):
     return label_mask
 
 
-def build_circle_v2(diameter, pixel_size):
-    # Module to construct shape of a label
-    #
-    # :param int diameter: radius or a circle in Angstrom
-    # :param int pixel_size: size of a pixel
-
-    dim = round(diameter / pixel_size)
-    if dim % 2 == 0:
-        dim = dim + 1
-
-    circle = np.zeros((dim, dim))
-    x0, y0 = (round(int(len(circle) / 2)), round(int(len(circle) / 2)))
-
-    for x in range(dim):
-        dx = int(x - x0)
-        for y in range(dim):
-            dy = int(y - y0)
-            distance_squared = (dx * dx + dy * dy) ** .5
-            if distance_squared <= dim / 2:
-                circle[x, y] = 1
-
-    return circle
+# def build_circle_v2(diameter, pixel_size):
+#    # Module to construct shape of a label
+#    #
+#    # :param int diameter: radius or a circle in Angstrom
+#    # :param int pixel_size: size of a pixel
+#
+#    dim = round(diameter / pixel_size)
+#    if dim % 2 == 0:
+#        dim = dim + 1
+#
+#    circle = np.zeros((dim, dim))
+#    x0, y0 = (round(int(len(circle) / 2)), round(int(len(circle) / 2)))
+#
+#    for x in range(dim):
+#        dx = int(x - x0)
+#        for y in range(dim):
+#            dy = int(y - y0)
+#            distance_squared = (dx * dx + dy * dy) ** .5
+#            if distance_squared <= dim / 2:
+#                circle[x, y] = 1
+#
+#    return circle
 
 # Module: build_circle
 # P = {(x, y:(x - x0) ^ 2 + (y - y0) ^ 2 <= r ^ 2}
