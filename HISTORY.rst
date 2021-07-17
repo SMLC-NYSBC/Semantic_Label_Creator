@@ -2,7 +2,7 @@
 History
 =======
 
-0.1.8 (2021-07-09)
+0.1.8 (2021-07-17)
 ------------------
 
 * Bugfix for drawing horizontal lines
