@@ -38,11 +38,10 @@ def slcpy(dir_path, pixel_size=None, circle_size=125):
 
         start_point = int(sum(segments[0:i]))
         stop_point = start_point + int(segments[i])
-        MT = interpolation_3D(points[start_point:stop_point])
+        mt = interpolation_3D(points[start_point:stop_point])
 
-        for j in range(len(MT)-1):
-            c0 = MT[j, :3]
-            c1 = MT[j+1, :3]
-            label_mask = draw_label(r, c0, c1, label_mask)
+        for j in range(len(mt)):
+            c = mt[j, :3]
+            label_mask = draw_label(r, c, label_mask)
 
     return label_mask
