@@ -34,21 +34,34 @@ from slcpy.version import version
               show_default=True)
 @click.option('-d', '--circle_size',
               default=250,
-              help='size of a circle in Angstrom that would become label shape',
+              help='size of a circle in Angstrom for label shape',
+              show_default=True)
+@click.option('-l', '--multi_layer',
+              default=False,
+              help='define if output of semantic labels should be defined as '
+                   'single, or unique value for each lines.',
+              show_default=True)
+@click.option('-t', '--trim_mask',
+              default=True,
+              help='define if the input image has to be trim to fit labels.',
               show_default=True)
 @click.version_option(version=version)
-def main(dir_path, output, pixel_size, circle_size):
+def main(dir_path, output,
+         pixel_size, circle_size,
+         multi_layer, trim_mask):
     if os.path.isdir(output):
         try:
             os.rename(output, dir_path + r'\output_old')
             os.mkdir(output)
         except Exception:
-            print("Folder for the output data already exist... Data copied to output_old."
+            print("Folder for the output data already exist... "
+                  "Data copied to output_old."
                   "Output folder will be overwrite...")
             shutil.rmtree(dir_path + r'\output_old')
             os.rename(output, dir_path + r'\output_old')
             os.mkdir(output)
             pass
+
     else:
         os.mkdir(output)
 
@@ -56,15 +69,18 @@ def main(dir_path, output, pixel_size, circle_size):
         sleep(0.001)
 
         if file.endswith('.tif'):
-            label_mask = slcpy(
+            image, label_mask = slcpy(
                 os.path.join(dir_path, file),
                 pixel_size,
-                circle_size
+                circle_size,
+                multi_layer,
+                trim_mask
             )
-            shutil.copy(
-                os.path.join(dir_path, file),
-                os.path.join(output, file)
+            tifffile.imwrite(
+                os.path.join(output, file[:-3] + r'.tif'),
+                np.array(image, 'int8')
             )
+
             tifffile.imwrite(
                 os.path.join(output, file[:-3] + r'_mask.tif'),
                 np.array(label_mask, 'int8')

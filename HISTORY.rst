@@ -2,6 +2,12 @@
 History
 =======
 
+0.1.9 (2021-07-17)
+------------------
+
+* Added trimming of input data to label mask size
+* Added multiple lables
+
 0.1.8 (2021-07-17)
 ------------------
 
