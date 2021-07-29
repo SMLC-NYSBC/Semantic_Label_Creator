@@ -79,10 +79,14 @@ or with terminal::
     [-default] os.getcwd() + r'\data' + r'\output'
  int [-px] anisotropic images pixel size in Angstrom.
     [-default] None
- int [-d] diameter in Angstrom of a circle that would be drawn a semantic mask
+ int [-dl] diameter in Angstrom of a circle that would be drawn a semantic mask
     [-default] 250
-
-
+ int [-l] specified if lines should have independent labeling
+    [-default] False
+ int [-t] specified if the input image has to be trim to fit labels.
+    [-default] True
+    
+    
 Credits
 -------
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
