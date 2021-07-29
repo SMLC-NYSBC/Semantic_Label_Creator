@@ -79,7 +79,7 @@ or with terminal::
     [-default] os.getcwd() + r'\data' + r'\output'
  int [-px] anisotropic images pixel size in Angstrom.
     [-default] None
- int [-dl] diameter in Angstrom of a circle that would be drawn a semantic mask
+ int [-d] diameter in Angstrom of a circle that would be drawn a semantic mask
     [-default] 250
  int [-l] specified if lines should have independent labeling
     [-default] False
