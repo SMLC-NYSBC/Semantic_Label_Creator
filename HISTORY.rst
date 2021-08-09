@@ -6,7 +6,7 @@ History
 ------------------
 
 * Added trimming of input data to label mask size
-* Added multiple lables
+* Added multiple labels
 
 0.1.8 (2021-07-17)
 ------------------

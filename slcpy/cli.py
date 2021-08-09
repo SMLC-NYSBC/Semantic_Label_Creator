@@ -38,8 +38,7 @@ from slcpy.version import version
               show_default=True)
 @click.option('-l', '--multi_layer',
               default=False,
-              help='define if output of semantic labels should be defined as '
-                   'single, or unique value for each lines.',
+              help='specified if lines should have independent labeling',
               show_default=True)
 @click.option('-t', '--trim_mask',
               default=True,
