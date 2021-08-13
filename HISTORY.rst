@@ -2,6 +2,11 @@
 History
 =======
 
+0.2.0 (2021-08-13)
+------------------
+
+* Added trimming of data for multiple images with specific size + recycling of empty labels
+
 0.1.9 (2021-07-17)
 ------------------
 

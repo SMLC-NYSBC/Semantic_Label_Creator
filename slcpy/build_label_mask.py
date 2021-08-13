@@ -1,5 +1,4 @@
 """
-
     Module draw_label to construct shape of a label
 
     :param int r: radius of a circle in Angstrom
@@ -8,7 +7,6 @@
     :param list segment_color: single list value for naming drawn line in RGB
 
     :author Robert Kiewisz
-
 """
 from skimage import draw
 

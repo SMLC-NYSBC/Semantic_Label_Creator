@@ -1,9 +1,7 @@
 """
-
     Main module
 
     :author Robert Kiewisz
-
 """
 import os
 import shutil
@@ -15,6 +13,7 @@ from tifffile import tifffile
 from tqdm import tqdm
 
 from slcpy.main import slcpy
+from slcpy.trim import trim_images
 from slcpy.version import version
 
 
@@ -44,10 +43,15 @@ from slcpy.version import version
               default=True,
               help='define if the input image has to be trim to fit labels.',
               show_default=True)
+@click.option('-xy', '--trim_size',
+              default=None,
+              type=int,
+              help='define size in pixels of output images.',
+              show_default=None)
 @click.version_option(version=version)
 def main(dir_path, output,
          pixel_size, circle_size,
-         multi_layer, trim_mask):
+         multi_layer, trim_mask, trim_size):
     if os.path.isdir(output):
         try:
             os.rename(output, dir_path + r'\output_old')
@@ -75,15 +79,21 @@ def main(dir_path, output,
                 multi_layer,
                 trim_mask
             )
-            tifffile.imwrite(
-                os.path.join(output, file[:-3] + r'.tif'),
-                np.array(image, 'int8')
-            )
 
-            tifffile.imwrite(
-                os.path.join(output, file[:-3] + r'_mask.tif'),
-                np.array(label_mask, 'int8')
-            )
+            if trim_size is None:
+                tifffile.imwrite(
+                    os.path.join(output, file[:-3] + r'.tif'),
+                    np.array(image, 'int8')
+                )
+
+                tifffile.imwrite(
+                    os.path.join(output, file[:-3] + r'_mask.tif'),
+                    np.array(label_mask, 'int8')
+                )
+            else:
+                trim_images(image, label_mask,
+                            trim_size, multi_layer,
+                            file, output)
 
 
 if __name__ == '__main__':

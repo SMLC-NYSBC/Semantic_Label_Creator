@@ -1,19 +1,19 @@
-import numpy as np
-
 from time import sleep
+
+import numpy as np
 from tqdm import tqdm
 
 from slcpy.build_label_mask import draw_label
-from slcpy.interpolation import interpolation_3D
 from slcpy.import_data import ImportDataFromAmira
+from slcpy.interpolation import interpolation_3D
 
 
 def trim_label_mask(points, image, label_mask):
     """
         Module to load 3D .tif file
         :param str points: 3D coordinates of pitons
-        :param str image: corresponding image for the labels
-        :param int label_mask: empty label mask
+        :param array image: corresponding image for the labels
+        :param array label_mask: empty label mask
 
         :author Robert Kiewisz
     """
@@ -27,10 +27,10 @@ def trim_label_mask(points, image, label_mask):
                  int(min_x):int(max_x)
                  ]
     label_mask_trim = label_mask[
-                 int(min_z):int(max_z),
-                 int(min_y):int(max_y),
-                 int(min_x):int(max_x)
-                 ]
+                      int(min_z):int(max_z),
+                      int(min_y):int(max_y),
+                      int(min_x):int(max_x)
+                      ]
 
     points[:, 0] = points[:, 0] - min_x
     points[:, 1] = points[:, 1] - min_y
