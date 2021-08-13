@@ -71,7 +71,7 @@ To use Semantic_Label_Creator in a project::
 
 or with terminal::
 
-    slcpy -dir "C:/..." -o "C:/.../output" -px None -d 250 -l True -t True -xy 256
+    slcpy -dir C:/... -o C:/.../output -px None -d 250 -l True -t True -xy 256
 
  string [-dir] directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'
