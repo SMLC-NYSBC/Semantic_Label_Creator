@@ -85,6 +85,9 @@ or with terminal::
     [-default] False
  int [-t] specified if the input image has to be trim to fit labels.
     [-default] True
+ int [-xy] define size in pixels of output images.
+    [-default] None
+    [-type] int
     
     
 Credits
