@@ -38,8 +38,8 @@ def trim_images(image, label_mask,
         for j in range(1, x_axis + 1):
             nx_start += trim_size
             nx_end += trim_size
-            img_name = r'img_' + str(idx) + r'.tif'
-            mask_name = r'mask_' + str(idx) + r'.tif'
+            img_name = str(idx) + r'.tif'
+            mask_name = str(idx) + r'_mask.tif'
 
             trim_img = image[:, ny_start:ny_end, nx_start:nx_end]
             if nc is None:
@@ -47,7 +47,7 @@ def trim_images(image, label_mask,
             else:
                 trim_mk = label_mask[:, ny_start:ny_end, nx_start:nx_end, :]
 
-            if np.all(trim_mk[:, :, :, 1] == 0):
+            if np.all(trim_mk[:, :, :] == 0):
                 idx = idx
             else:
                 tifffile.imwrite(

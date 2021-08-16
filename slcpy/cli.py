@@ -56,7 +56,7 @@ def main(dir_path, output,
         try:
             os.rename(output, dir_path + r'\output_old')
             os.mkdir(output)
-            os.mkdir(output + r'\img')
+            os.mkdir(output + r'\imgs')
             os.mkdir(output + r'\mask')
 
         except Exception:
@@ -66,21 +66,21 @@ def main(dir_path, output,
             shutil.rmtree(dir_path + r'\output_old')
             os.rename(output, dir_path + r'\output_old')
             os.mkdir(output)
-            os.mkdir(output + r'\img')
+            os.mkdir(output + r'\imgs')
             os.mkdir(output + r'\mask')
             pass
 
     else:
         os.mkdir(output)
-        os.mkdir(output + r'\img')
+        os.mkdir(output + r'\imgs')
         os.mkdir(output + r'\mask')
 
     image_counter = 0
     idx = 0
     for file in tqdm(os.listdir(dir_path)):
         sleep(0.001)
-        img_name = r'img_' + str(image_counter) + r'.tif'
-        mask_name = r'mask_' + str(image_counter) + r'.tif'
+        img_name = str(image_counter) + r'.tif'
+        mask_name = str(image_counter) + r'_mask.tif'
         image_counter += 1
 
         if file.endswith('.tif'):

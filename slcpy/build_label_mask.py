@@ -14,7 +14,12 @@ from skimage import draw
 def draw_label(r, c, label_mask, segment_color):
     assert type(segment_color) == list
 
-    nz, ny, nx, nc = label_mask.shape
+    try:
+        nz, ny, nx, nc = label_mask.shape
+    except Exception:
+        nz, ny, nx = label_mask.shape
+        nc = 1
+
     assert len(segment_color) == nc
 
     x = int(c[0])
@@ -26,7 +31,10 @@ def draw_label(r, c, label_mask, segment_color):
 
     cy, cx = draw.disk((y, x), r, shape=(ny, nx))
 
-    for i in range(nc):
-        label_mask[z, cy, cx, i] = segment_color[i]
+    if nc > 1:
+        for i in range(nc):
+            label_mask[z, cy, cx, i] = segment_color[i]
+    else:
+        label_mask[z, cy, cx] = segment_color
 
     return label_mask
