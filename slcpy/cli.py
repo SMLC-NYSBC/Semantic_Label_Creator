@@ -56,6 +56,9 @@ def main(dir_path, output,
         try:
             os.rename(output, dir_path + r'\output_old')
             os.mkdir(output)
+            os.mkdir(output + r'\img')
+            os.mkdir(output + r'\mask')
+
         except Exception:
             print("Folder for the output data already exist... "
                   "Data copied to output_old."
@@ -63,13 +66,22 @@ def main(dir_path, output,
             shutil.rmtree(dir_path + r'\output_old')
             os.rename(output, dir_path + r'\output_old')
             os.mkdir(output)
+            os.mkdir(output + r'\img')
+            os.mkdir(output + r'\mask')
             pass
 
     else:
         os.mkdir(output)
+        os.mkdir(output + r'\img')
+        os.mkdir(output + r'\mask')
 
+    image_counter = 0
+    idx = 0
     for file in tqdm(os.listdir(dir_path)):
         sleep(0.001)
+        img_name = r'img_' + str(image_counter) + r'.tif'
+        mask_name = r'mask_' + str(image_counter) + r'.tif'
+        image_counter += 1
 
         if file.endswith('.tif'):
             image, label_mask = slcpy(
@@ -82,18 +94,18 @@ def main(dir_path, output,
 
             if trim_size is None:
                 tifffile.imwrite(
-                    os.path.join(output, file[:-3] + r'.tif'),
+                    os.path.join(output + r'\imgs', img_name),
                     np.array(image, 'int8')
                 )
 
                 tifffile.imwrite(
-                    os.path.join(output, file[:-3] + r'_mask.tif'),
+                    os.path.join(output + r'\mask', mask_name),
                     np.array(label_mask, 'int8')
                 )
             else:
-                trim_images(image, label_mask,
-                            trim_size, multi_layer,
-                            file, output)
+                idx = trim_images(image, label_mask,
+                                  trim_size, multi_layer,
+                                  output, idx)
 
 
 if __name__ == '__main__':

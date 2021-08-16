@@ -49,12 +49,13 @@ You can either clone the public repository:
 .. code-block:: console
 
     $ git clone git://github.com/RRobert92/Semantic_Label_Creator
+    $ python setup.py install
 
-Once you have a copy of the source, you can install it with:
+or install is with pip:
 
 .. code-block:: console
 
-    $ python setup.py install
+    $ pip install slcpy
 
 
 .. _Github repo: https://github.com/RRobert92/Semantic_Label_Creator
@@ -67,7 +68,9 @@ Usage
 To use Semantic_Label_Creator in a project::
 
     from slcpy.main import slcpy
-    label_mask = slcpy(dir_path, pixel_size=None, circle_size=250)
+    label_mask = slcpy(dir_path,
+                       pixel_size=None, circle_size=250,
+                       multi_layer=True, trim_mask=True, trim_size=256)
 
 or with terminal::
 
@@ -78,7 +81,7 @@ or with terminal::
  string [-o] output directory to the folder where all of converted filed are stored.
     [-default] os.getcwd() + r'\data' + r'\output'
  int [-px] anisotropic images pixel size in Angstrom.
-    [-default] None
+    [-default] None  [-type] int
  int [-d] diameter in Angstrom of a circle that would be drawn a semantic mask
     [-default] 250
  int [-l] specified if lines should have independent labeling
@@ -86,10 +89,9 @@ or with terminal::
  int [-t] specified if the input image has to be trim to fit labels.
     [-default] True
  int [-xy] define size in pixels of output images.
-    [-default] None
-    [-type] int
-    
-    
+    [-default] None [-type] int
+
+
 Credits
 -------
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.

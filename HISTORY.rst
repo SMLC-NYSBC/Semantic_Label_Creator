@@ -2,6 +2,11 @@
 History
 =======
 
+0.2.1 (2021-08-13)
+------------------
+
+* Output data are now split to imgs and mask folder if -xy != None
+
 0.2.0 (2021-08-13)
 ------------------
 
