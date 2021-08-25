@@ -43,15 +43,19 @@ from slcpy.version import version
               default=True,
               help='define if the input image has to be trim to fit labels.',
               show_default=True)
-@click.option('-xy', '--trim_size',
+@click.option('-xy', '--trim_size_xy',
               default=None,
               type=int,
-              help='define size in pixels of output images.',
+              help='define size in pixels of output images in xy.',
               show_default=None)
+@click.option('-z', '--trim_size_z',
+              default=64,
+              help='define size in pixels of output images in z.',
+              show_default=True)
 @click.version_option(version=version)
 def main(dir_path, output,
          pixel_size, circle_size,
-         multi_layer, trim_mask, trim_size):
+         multi_layer, trim_mask, trim_size_xy, trim_size_z):
     if os.path.isdir(output):
         try:
             os.rename(output, dir_path + r'\output_old')
@@ -92,7 +96,7 @@ def main(dir_path, output,
                 trim_mask
             )
 
-            if trim_size is None:
+            if trim_size_xy is None:
                 tifffile.imwrite(
                     os.path.join(output + r'\imgs', img_name),
                     np.array(image, 'int8')
@@ -104,7 +108,7 @@ def main(dir_path, output,
                 )
             else:
                 idx = trim_images(image, label_mask,
-                                  trim_size, multi_layer,
+                                  trim_size_xy, trim_size_z, multi_layer,
                                   output, idx)
 
 
