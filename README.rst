@@ -33,7 +33,6 @@ Features
 ToDo
 --------
 * Cut label mask with padding
-* Convert semantic label mask to point cloud
 
 ============
 Installation
