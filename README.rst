@@ -1,6 +1,6 @@
-==============================
-Semantic Label Creator [slcpy]
-==============================
+================================
+Semantic Label Converter [slcpy]
+================================
 
 .. image:: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
         :target: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
@@ -15,13 +15,25 @@ Semantic Label Creator [slcpy]
 .. image:: https://www.codefactor.io/repository/github/rrobert92/semantic_label_creator/badge
         :target: https://img.shields.io/github/v/release/RRobert92
 
-Python package to decode Amira 3D coordinate spatial graphs into semantic label mask.
+Python package for converting segmented point cloud to trimmed semantic label masks
+as well as converting unsegmented semantic labels into a general point cloud.
+The point cloud to semantic conversion is achieved by drawing a circle with fixed diameter
+along the line given as points. Additionally the image dataset can be trimmed with or
+without padding to indicated size. The semantic to point cloud conversion is done before or
+after stitching of images (with or without padding) by selecting at each Z position
+all points maxima's and saving their 3D coordinates in array.
 
 * Documentation: https://semantic-label-creator.readthedocs.io/en/latest/
 
 Features
 --------
-* Load Amira spatial graph to transform 3D coordinates into semantic label mask
+* Convert 3D point cloud from (.am) files to semantic label mask
+* Convert semantic label mask to 3D point cloud
+
+ToDo
+--------
+* Cut label mask with padding
+* Convert semantic label mask to point cloud
 
 ============
 Installation
@@ -72,9 +84,12 @@ To use Semantic_Label_Creator in a project::
                        pixel_size=None, circle_size=250,
                        multi_layer=True, trim_mask=True, trim_size=256)
 
+    point_could = slcpy_graph(dir_path)
+
 or with terminal::
 
-    slcpy -dir C:/... -o C:/.../output -px None -d 250 -l True -t True -xy 256
+    slcpy_semantic -dir C:/... -o C:/.../output -px None -d 250 -l True -t True -xy 256
+    slcpy_graph -dir C:/... -o C:/.../output
 
  string [-dir] directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'

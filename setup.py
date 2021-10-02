@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-
-"""The setup script."""
-
 from setuptools import setup, find_packages
 from slcpy.version import version
 
@@ -36,7 +32,8 @@ setup(
     description="Python package to decode Amira 3D coordinate spatial graphs into semantic label mask",
     entry_points={
         'console_scripts': [
-            'slcpy=slcpy.cli:main',
+            'slcpy_semantic=slcpy.build_semantic:main',
+            'slcpy_graph=slcpy.build_graph:main',
         ],
     },
     install_requires=requirements,
@@ -46,7 +43,9 @@ setup(
     include_package_data=True,
     keywords='slcpy',
     name='slcpy',
-    packages=find_packages(include=['slcpy', 'slcpy.*']),
+    packages=find_packages(include=['slcpy',
+                                    'slcpy.*',
+                                    'slcpy.utils.*']),
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/RRobert92/Semantic_Label_Creator',
