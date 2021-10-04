@@ -33,6 +33,7 @@ setup(
     entry_points={
         'console_scripts': [
             'slcpy_semantic=slcpy.build_semantic:main',
+            'slcpy_stitch=slcpy.stitch_images:main',
             'slcpy_graph=slcpy.build_graph:main',
         ],
     },

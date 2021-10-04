@@ -5,7 +5,10 @@ History
 -------------------
 * Remove pixel size calculation interchange to extracting information from (.am) files
 * Added module for extracting 3D coordinates for point cloud from semantic label mask
-
+* Added trimming of whole image with stride to calculate overlaying area and
+  number or patches in xyz
+* Added module to stitch images into one images based on file names (e.g 1_1_1, where
+  each number indicates xyz patch position
 
 0.2.1 (2021-08-13)
 ------------------

@@ -8,7 +8,7 @@ from tifffile import tifffile
 from tqdm import tqdm
 
 from slcpy.main import slcpy_semantic
-from slcpy.utils.trim import trim_images
+from slcpy.utils.trim import trim_images, trim_to_patches
 from slcpy.version import version
 
 
@@ -47,10 +47,20 @@ from slcpy.version import version
               default=64,
               help='define size in pixels of output images in z.',
               show_default=True)
+@click.option('-a', '--trim_all',
+              default=False,
+              help='if True the whole image is used for trimming',
+              show_default=True)
+@click.option('-s', '--stride',
+              default=25,
+              help='overlay size used for trimming images',
+              show_default=True)
 @click.version_option(version=version)
 def main(dir_path, output,
          pixel_size, circle_size,
-         multi_layer, trim_mask, trim_size_xy, trim_size_z):
+         multi_layer,
+         trim_mask, trim_size_xy, trim_size_z,
+         trim_all, stride):
     """
     Main module for composing semantic label from given point cloud
 
@@ -65,6 +75,8 @@ def main(dir_path, output,
             mask. It's helpful for big files to speed up computation.
        -xy / trim_size_xy: Final XY dimension of output images.
        -z / time_size_z: Final Z dimension of output images.
+       -a / trim_all: Use whole image for trimming
+       -s / stride: stride for patch step size with overlay
     """
 
     if os.path.isdir(output):
@@ -118,9 +130,14 @@ def main(dir_path, output,
                     np.array(label_mask, 'int8')
                 )
             else:
-                idx = trim_images(image, label_mask,
-                                  trim_size_xy, trim_size_z, multi_layer,
-                                  output, idx)
+                if not trim_all:
+                    idx = trim_images(image, label_mask,
+                                      trim_size_xy, trim_size_z, multi_layer,
+                                      output, idx)
+                else:
+                    idx = trim_to_patches(image, label_mask,
+                                          trim_size_xy, trim_size_z, multi_layer,
+                                          output, idx, stride)
 
 
 if __name__ == '__main__':
