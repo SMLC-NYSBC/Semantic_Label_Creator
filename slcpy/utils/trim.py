@@ -95,7 +95,6 @@ def trim_to_patches(image: np.ndarray,
                     trim_size_z: int,
                     multi_layer: bool,
                     output: str,
-                    image_counter=1,
                     stride=25):
     """
     Function to trimmed image and mask with to specified size
@@ -110,13 +109,11 @@ def trim_to_patches(image: np.ndarray,
         trim_size_z: Size of trimming in z dimension
         multi_layer: Single, or unique value for each lines
         output: Name of the output directory for saving
-        image_counter: Number id of image
         stride: Trimming step size
 
     Returns:
         Saved trimmed images as tiff in specified folder
     """
-    idx = image_counter + 1
 
     if multi_layer:
         nz, ny, nx, nc = label_mask.shape
@@ -127,43 +124,44 @@ def trim_to_patches(image: np.ndarray,
     if trim_size_xy is not None or trim_size_z is not None:
         assert nx >= trim_size_xy, "trim_size_z should be equal or greater then X dimension!"
         assert ny >= trim_size_xy, "trim_size_z should be equal or greater then Y dimension!"
-        assert nz >= trim_size_z, "trim_size_z should be equal or greater then Z dimension!"
+        if nz >= trim_size_z:
+            trim_size_z = nz
     else:
         assert stride is not None, "Trim sizes or stride has to be indicated!"
         trim_size_xy = 64
         trim_size_z = 64
 
-        # Calculate number of patches, patch sizes, and stride for xyz
-        x, y, z = math.ceil(nx / trim_size_xy), \
-                  math.ceil(ny / trim_size_xy), \
-                  math.ceil(nz / trim_size_z)
+    # Calculate number of patches, patch sizes, and stride for xyz
+    x, y, z = math.ceil(nx / trim_size_xy), \
+              math.ceil(ny / trim_size_xy), \
+              math.ceil(nz / trim_size_z)
 
-        x_padding, y_padding, z_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx, \
-                                          (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny, \
-                                          (trim_size_z + ((trim_size_z - stride) * (z - 1))) - nz
+    x_padding, y_padding, z_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx, \
+                                      (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny, \
+                                      (trim_size_z + ((trim_size_z - stride) * (z - 1))) - nz
 
-        # Adapt number of patches for trimming
-        if trim_size_xy is not None or trim_size_z is not None:
-            while x_padding < 0:
-                x += 1
-                x_padding += trim_size_xy - stride
-            while y_padding < 0:
-                y += 1
-                y_padding += trim_size_xy - stride
-            while z_padding < 0:
-                z += 1
-                z_padding += trim_size_z - stride
+    # Adapt number of patches for trimming
+    if trim_size_xy is not None or trim_size_z is not None:
+        while x_padding < 0:
+            x += 1
+            x_padding += trim_size_xy - stride
+        while y_padding < 0:
+            y += 1
+            y_padding += trim_size_xy - stride
+        while z_padding < 0:
+            z += 1
+            z_padding += trim_size_z - stride
 
-        # Adapt patch size for trimming
-        else:
-            while x_padding <= 0 or y_padding <= 0:
-                trim_size_xy += 1
-                x_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx
-                y_padding = (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny
+    # Adapt patch size for trimming
+    else:
+        while x_padding <= 0 or y_padding <= 0:
+            trim_size_xy += 1
+            x_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx
+            y_padding = (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny
 
-            while z_padding < 0:
-                trim_size_z += 1
-                z_padding = (trim_size_z + ((trim_size_z - stride) * (z - 1))) - nz
+        while z_padding < 0:
+            trim_size_z += 1
+            z_padding = (trim_size_z + ((trim_size_z - stride) * (z - 1))) - nz
 
     # Expand image of a patch
     image_padded = np.pad(image,
@@ -195,8 +193,8 @@ def trim_to_patches(image: np.ndarray,
                 x_start = x_start + trim_size_xy - stride
                 x_stop = x_start + trim_size_xy
 
-                img_name = str("{}_{}_{}_{}_{}.tif".format(idx, k, j, i, stride))
-                mask_name = str("{}_{}_{}_{}_{}_mask.tif".format(idx, k, j, i, stride))
+                img_name = str("{}_{}_{}_{}.tif".format(k, j, i, stride))
+                mask_name = str("{}_{}_{}_{}_mask.tif".format(k, j, i, stride))
 
                 trim_img = image_padded[
                            z_start:z_stop,
@@ -220,6 +218,3 @@ def trim_to_patches(image: np.ndarray,
                 tifffile.imwrite(
                     os.path.join(output + r'\mask', mask_name),
                     np.array(trim_mk, 'int8'))
-
-                idx += 1
-    return idx

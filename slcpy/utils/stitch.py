@@ -29,6 +29,7 @@ class StitchImages:
         self.y = max(list(map(int, [str.split(f[:-4], "_")[1] for f in file_list])))
         self.z = max(list(map(int, [str.split(f[:-4], "_")[2] for f in file_list])))
         self.stride = max(list(map(int, [str.split(f[:-4], "_")[3] for f in file_list])))
+
         return file_list
 
     def _calculate_dim(self,
@@ -36,18 +37,22 @@ class StitchImages:
         self.nz, self.ny, self.nx = image.shape
 
     def __call__(self,
-                 dir_path: str):
+                 dir_path: str,
+                 prefix=None):
 
         file_list = self._find_xyz(dir_path)
         self._calculate_dim(tifffile.imread(join(dir_path, file_list[0])))
 
-        x_dim = self.nx + ((self.nx - self.stride) * (self.x - 1))
-        y_dim = self.ny + ((self.ny - self.stride) * (self.y - 1))
-        z_dim = self.nz + ((self.nz - self.stride) * (self.z - 1))
-        stitched_image = np.zeros((z_dim, y_dim, x_dim))
+        x_dim = self.nx + ((self.nx - self.stride) * self.x)
+        y_dim = self.ny + ((self.ny - self.stride) * self.y)
+        z_dim = self.nz + ((self.nz - self.stride) * self.z)
+        stitched_image = np.zeros((z_dim, y_dim, x_dim), dtype="int8")
 
         z_start, z_stop = 0 - (self.nz - self.stride), 0
         img_counter = 0
+
+        if self.z == 0:
+            self.z = 1
 
         for i in range(self.z):
             z_start = z_start + self.nz - self.stride
@@ -62,9 +67,16 @@ class StitchImages:
                 for k in range(self.x):
                     x_start = x_start + self.nx - self.stride
                     x_stop = x_start + self.nx
-                    img_dir = str(join(dir_path, file_list[img_counter]))
+
+                    if prefix is not None:
+                        img_dir = str(join(dir_path,
+                                           "{}_{}_{}_{}_{}.tif".format(k, j, i, self.stride, prefix)))
+                    else:
+                        img_dir = str(join(dir_path,
+                                           "{}_{}_{}_{}.tif".format(k, j, i, self.stride)))
 
                     img = tifffile.imread(img_dir)
+                    assert img.shape == (self.nz, self.ny, self.nx)
                     stitched_image[z_start:z_stop, y_start:y_stop, x_start:x_stop] = img
 
                     img_counter += 1

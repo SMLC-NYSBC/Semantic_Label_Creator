@@ -137,7 +137,7 @@ def main(dir_path, output,
                 else:
                     idx = trim_to_patches(image, label_mask,
                                           trim_size_xy, trim_size_z, multi_layer,
-                                          output, idx, stride)
+                                          output, stride)
 
 
 if __name__ == '__main__':

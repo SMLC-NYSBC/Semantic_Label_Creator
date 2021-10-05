@@ -71,7 +71,7 @@ def slcpy_semantic(dir_path: str,
 
     if pixel_size is None:
         pixel_size = img.pixel_size_in_et()
-        print("Detected pixel size was {}".format(pixel_size))
+        print(" Detected pixel size was {}".format(pixel_size))
 
     segments = img.get_segments()
     points = img.get_points().round()
@@ -119,8 +119,9 @@ def slcpy_graph(dir_path: str):
     return img.find_maximas()
 
 
-def slcpy_stitch(dir_path: str):
+def slcpy_stitch(dir_path: str,
+                 prefix=None):
     stitcher = StitchImages()
-    stitch_img = stitcher(dir_path)
+    stitch_img = stitcher(dir_path, prefix)
 
     return stitch_img
