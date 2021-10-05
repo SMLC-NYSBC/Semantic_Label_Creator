@@ -38,7 +38,7 @@ def main(dir_path: str,
                                   prefix)
 
     tifffile.imwrite(
-        os.path.join(output),
+        os.path.join(output, 'Stitched_Image.tif'),
         np.array(stitched_image, 'int8')
     )
 
