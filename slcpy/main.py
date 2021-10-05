@@ -6,6 +6,7 @@ from tqdm import tqdm
 from slcpy.utils.build_label_mask import draw_label
 from slcpy.utils.import_data import ImportDataFromAmira, ImportSemanticMask
 from slcpy.utils.interpolation import interpolation_3D
+from slcpy.utils.stitch import StitchImages
 
 
 def trim_label_mask(points: np.ndarray,
@@ -116,3 +117,10 @@ def slcpy_graph(dir_path: str):
     img = ImportSemanticMask(src_tiff=dir_path)
 
     return img.find_maximas()
+
+
+def slcpy_stitch(dir_path: str):
+    stitcher = StitchImages()
+    stitch_img = stitcher(dir_path)
+
+    return stitch_img

@@ -1,0 +1,71 @@
+from os import listdir
+from os.path import isfile, join
+
+import numpy as np
+from tifffile import tifffile
+
+
+class StitchImages:
+    """
+    Class object to stitch cut date into one big image. Object recognize images
+    with naming 1_1_1_25 where 1 indicate xyz position and 25 indicate stride.
+
+    Args:
+        dir_path: Directory where all images are stored. Indicate one directory
+            for each dataset, that has to be stitch.
+    """
+
+    def __init__(self):
+        self.nx, self.ny, self.nz = 0, 0, 0  # Variable used to store xyz image dimension
+        self.x, self.y, self.z = 0, 0, 0  # Variable to store number of patches in xyz
+        self.stride = 0  # Variable to store step size
+
+    def _find_xyz(self,
+                  dir_path: str):
+        # Extract information about images in dir_path
+        file_list = [f for f in listdir(dir_path) if isfile(join(dir_path, f))]
+
+        self.x = max(list(map(int, [str.split(f[:-4], "_")[0] for f in file_list])))
+        self.y = max(list(map(int, [str.split(f[:-4], "_")[1] for f in file_list])))
+        self.z = max(list(map(int, [str.split(f[:-4], "_")[2] for f in file_list])))
+        self.stride = max(list(map(int, [str.split(f[:-4], "_")[3] for f in file_list])))
+        return file_list
+
+    def _calculate_dim(self,
+                       image: np.ndarray):
+        self.nz, self.ny, self.nx = image.shape
+
+    def __call__(self,
+                 dir_path: str):
+
+        file_list = self._find_xyz(dir_path)
+        self._calculate_dim(tifffile.imread(join(dir_path, file_list[0])))
+
+        x_dim = self.nx + ((self.nx - self.stride) * (self.x - 1))
+        y_dim = self.ny + ((self.ny - self.stride) * (self.y - 1))
+        z_dim = self.nz + ((self.nz - self.stride) * (self.z - 1))
+        stitched_image = np.zeros((z_dim, y_dim, x_dim))
+
+        z_start, z_stop = 0 - (self.nz - self.stride), 0
+        img_counter = 0
+
+        for i in range(self.z):
+            z_start = z_start + self.nz - self.stride
+            z_stop = z_start + self.nz
+            y_start, y_stop = 0 - (self.ny - self.stride), 0
+
+            for j in range(self.y):
+                y_start = y_start + self.ny - self.stride
+                y_stop = y_start + self.ny
+                x_start, x_stop = 0 - (self.nx - self.stride), 0
+
+                for k in range(self.x):
+                    x_start = x_start + self.nx - self.stride
+                    x_stop = x_start + self.nx
+                    img_dir = str(join(dir_path, file_list[img_counter]))
+
+                    img = tifffile.imread(img_dir)
+                    stitched_image[z_start:z_stop, y_start:y_stop, x_start:x_stop] = img
+
+                    img_counter += 1
+        return stitched_image
