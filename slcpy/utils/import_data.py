@@ -1,11 +1,14 @@
 from os import path
 from time import sleep
 
+import edt
 import numpy as np
-from skimage import io
 from scipy import ndimage as ndi
+from scipy.ndimage import _nd_image
+from skimage import io
 from skimage.feature import peak_local_max
 from tqdm import tqdm
+
 
 class ImportDataFromAmira:
     """
@@ -189,8 +192,7 @@ class ImportSemanticMask:
     """
 
     def __init__(self,
-                 src_tiff: str,
-                 min_distance=10):
+                 src_tiff: str):
 
         self.src_tiff = src_tiff
 
@@ -198,8 +200,6 @@ class ImportSemanticMask:
             self.image = io.imread(self.src_tiff)
         except RuntimeWarning:
             raise Warning("Directory or input .tiff file is not correct...")
-
-        self.min_distance = min_distance
 
     def image_data(self):
         return self.image
@@ -212,7 +212,7 @@ class ImportSemanticMask:
             sleep(0.001)
             img_slice = self.image[i, :, :]
 
-            dist_matrix = ndi.distance_transform_edt(img_slice)
+            dist_matrix = edt.edt(img_slice)
             slice_maxima = peak_local_max(dist_matrix, labels=img_slice)
 
             z = np.append(z, np.repeat(i, len(slice_maxima)))
@@ -221,3 +221,4 @@ class ImportSemanticMask:
         coordinates = np.array((z, y, x))
 
         return coordinates.T
+
