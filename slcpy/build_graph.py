@@ -29,25 +29,6 @@ def main(dir_path, output):
         -o / output: Output directory for saving transformed files.
     """
 
-    if os.path.isdir(output):
-        try:
-            os.mkdir(output)
-            os.mkdir(output + r'\Mask_Coordinates')
-
-        except Exception:
-            print("Folder for the output data already exist... "
-                  "Data copied to output_old."
-                  "Output folder will be overwrite...")
-            shutil.rmtree(dir_path + r'\output_old')
-            os.rename(output, dir_path + r'\output_old')
-            os.mkdir(output)
-            os.mkdir(output + r'\Mask_Coordinates')
-            pass
-
-    else:
-        os.mkdir(output)
-        os.mkdir(output + r'\Mask_Coordinates')
-
     for file in tqdm(os.listdir(dir_path)):
         sleep(0.001)
 
@@ -55,7 +36,7 @@ def main(dir_path, output):
             coords = slcpy_graph(
                 os.path.join(dir_path, file)
             )
-            np.save(os.path.join(output + r'\Mask_Coordinates', file[:-4]),
+            np.save(os.path.join(output, file[:-4]),
                     coords)
 
 

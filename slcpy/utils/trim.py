@@ -14,6 +14,7 @@ def trim_images(image: np.ndarray,
                 image_counter: int):
     """
     Class module trim date to specified sizes
+
     Args:
         image: corresponding image for the labels
         label_mask: empty label mask

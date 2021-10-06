@@ -1,10 +1,11 @@
 from os import path
+from time import sleep
 
 import numpy as np
 from skimage import io
 from scipy import ndimage as ndi
 from skimage.feature import peak_local_max
-
+from tqdm import tqdm
 
 class ImportDataFromAmira:
     """
@@ -207,7 +208,8 @@ class ImportSemanticMask:
         """At each z position find point maximas and store their coordinates"""
         x, y, z = [], [], []
 
-        for i in range(self.image.shape[2]):
+        for i in tqdm(range(self.image.shape[0])):
+            sleep(0.001)
             img_slice = self.image[i, :, :]
 
             dist_matrix = ndi.distance_transform_edt(img_slice)
