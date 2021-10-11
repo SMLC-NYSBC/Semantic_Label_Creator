@@ -32,12 +32,13 @@ def draw_label(r: int,
     if z == nz:
         z = z - 1
 
-    cy, cx = draw.disk((y, x), r, shape=(ny, nx))
+    if z in range(nz+1):
+        cy, cx = draw.disk((y, x), r, shape=(ny, nx))
 
-    if nc > 1:
-        for i in range(nc):
-            label_mask[z, cy, cx, i] = segment_color[i]
-    else:
-        label_mask[z, cy, cx] = segment_color
+        if nc > 1:
+            for i in range(nc):
+                label_mask[z, cy, cx, i] = segment_color[i]
+        else:
+            label_mask[z, cy, cx] = segment_color
 
     return label_mask

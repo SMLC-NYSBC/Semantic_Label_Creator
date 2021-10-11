@@ -60,7 +60,7 @@ def slcpy_semantic(dir_path: str,
         trim_mask: True/False statement for trimming input data
         multi_layer: single, or unique value for each lines
     """
-
+    print(" Converting image {}".format(dir_path))
     img = ImportDataFromAmira(
         dir_path,
         dir_path[:-3] + r"CorrelationLines.am",
@@ -120,8 +120,11 @@ def slcpy_graph(dir_path: str):
 
 
 def slcpy_stitch(dir_path: str,
+                 mask: bool,
                  prefix=None):
     stitcher = StitchImages()
-    stitch_img = stitcher(dir_path, prefix)
+    stitch_img = stitcher(dir_path=dir_path,
+                          mask=mask,
+                          prefix=prefix)
 
     return stitch_img

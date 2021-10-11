@@ -85,26 +85,49 @@ To use Semantic_Label_Creator in a project::
 
     point_could = slcpy_graph(dir_path)
 
-or with terminal::
+or with terminal to build semantic label::
 
     slcpy_semantic -dir C:/... -o C:/.../output -px None -d 250 -l True -t True -xy 256
-    slcpy_graph -dir C:/... -o C:/.../output
 
- string [-dir] directory of the folder that contain data.
+ string [-dir] Directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'
- string [-o] output directory to the folder where all of converted filed are stored.
+ string [-o]   Output directory to the folder where all of converted filed are stored.
     [-default] os.getcwd() + r'\data' + r'\output'
- int [-px] anisotropic images pixel size in Angstrom.
-    [-default] None  [-type] int
- int [-d] diameter in Angstrom of a circle that would be drawn a semantic mask
+ int    [-px]  Anisotropic images pixel size in Angstrom.
+    [-default] None
+ int    [-d]   Diameter in Angstrom of a circle that would be drawn a semantic mask
     [-default] 250
- int [-l] specified if lines should have independent labeling
+ bool   [-l]   Specified if lines should have independent labeling
     [-default] False
- int [-t] specified if the input image has to be trim to fit labels.
+ bool   [-t]   Specified if the input image has to be trim to fit labels.
     [-default] True
- int [-xy] define size in pixels of output images.
+ int    [-xy]  Define size in pixels of output images.
     [-default] None [-type] int
 
+with terminal to stitch images::
+
+    slcpy_stitch -dir C:/... -o C:/.../output -m True -pf maks -b True
+ string [-dir] Directory of the folder that contain data.
+    [-default] os.getcwd() + r'\data'
+ string [-o]   Output directory to the folder where all of converted filed are stored.
+    [-default]  os.getcwd() + r'\data' + r'\output'
+ bool   [-m]   If True output images are treated as mask not images.
+    [-default] True
+ string [-pf]  Additional prefix name for each image.
+    [-default] None
+ bool   [-b]   If True output stitched image as binary mask.
+    [-default] True
+
+with terminal to build point cloud from image::
+
+    slcpy_graph -dir C:/... -o C:/.../output -s cvs
+ string [-dir] Directory of the folder that contain data.
+    [-default] os.getcwd() + r'\data'
+ string [-o]   Output directory to the folder where all of converted filed are stored.
+    [-default]  os.getcwd() + r'\data' + r'\output'
+ string [-s]   Define format of output point cloud.
+    [-default] csv
+    [-option] csv, np
 
 Credits
 -------

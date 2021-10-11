@@ -12,15 +12,15 @@ from slcpy.version import version
 @click.command()
 @click.option('-dir', '--dir_path',
               default=os.getcwd() + r'\data',
-              help='directory to the folder which contains *.tif files',
+              help='Directory to the folder which contains *.tif files.',
               show_default=True)
 @click.option('-o', '--output',
               default=os.getcwd() + r'\data' + r'\output',
-              help='directory to the folder where results will be saved',
+              help='Directory to the folder where results will be saved.',
               show_default=True)
 @click.option('-s', '--save',
               default="numpy",
-              help='save data as numpy .py or .csv',
+              help='Save data as numpy .py or .csv.',
               show_default=True
               )
 @click.version_option(version=version)
@@ -33,6 +33,7 @@ def main(dir_path: str,
     Args:
         -dir / dir_path: Directory to the folder with image dataset.
         -o / output: Output directory for saving transformed files.
+        -s / save: select type of saved data other numpy .py or .csv
     """
 
     for file in tqdm(os.listdir(dir_path)):
@@ -46,7 +47,7 @@ def main(dir_path: str,
                 np.save(os.path.join(output, file[:-4]),
                         coords)
             elif save == "csv":
-                np.savetxt(os.path.join(output, file[:-4]),
+                np.savetxt(os.path.join(output, str(file[:-4] + ".csv")),
                            coords,
                            delimiter=",")
 

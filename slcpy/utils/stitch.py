@@ -38,6 +38,7 @@ class StitchImages:
 
     def __call__(self,
                  dir_path: str,
+                 mask: bool,
                  prefix=None):
 
         file_list = self._find_xyz(dir_path)
@@ -77,7 +78,10 @@ class StitchImages:
 
                     img = tifffile.imread(img_dir)
                     assert img.shape == (self.nz, self.ny, self.nx)
-                    stitched_image[z_start:z_stop, y_start:y_stop, x_start:x_stop] = img
+                    if mask:
+                        stitched_image[z_start:z_stop, y_start:y_stop, x_start:x_stop] += img
+                    else:
+                        stitched_image[z_start:z_stop, y_start:y_stop, x_start:x_stop] = img
 
                     img_counter += 1
         return stitched_image

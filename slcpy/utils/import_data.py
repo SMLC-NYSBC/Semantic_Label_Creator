@@ -3,8 +3,6 @@ from time import sleep
 
 import edt
 import numpy as np
-from scipy import ndimage as ndi
-from scipy.ndimage import _nd_image
 from skimage import io
 from skimage.feature import peak_local_max
 from tqdm import tqdm
@@ -120,7 +118,7 @@ class ImportDataFromAmira:
             encoding="iso-8859-1"
         )
 
-        lines_in_et = et.read(10000).split("\n")
+        lines_in_et = et.read(50000).split("\n")
         transformation_list = str([
             word for word in lines_in_et if word.startswith('    BoundingBox')
         ]).split(" ")
@@ -148,7 +146,7 @@ class ImportDataFromAmira:
                 encoding="iso-8859-1"
             )
 
-            lines_in_et = et.read(3000).split("\n")
+            lines_in_et = et.read(50000).split("\n")
 
             try:
                 physical_size = str([
@@ -165,7 +163,7 @@ class ImportDataFromAmira:
 
                 return round(physical_size / pixel_size, 2)
 
-            except RuntimeWarning:
+            except:
                 raise Warning("{} file do not have embedded pixels size information").format(self.src_tiff[:-3] + "am")
         else:
             return self.pixel_size
@@ -221,4 +219,3 @@ class ImportSemanticMask:
         coordinates = np.array((z, y, x))
 
         return coordinates.T
-

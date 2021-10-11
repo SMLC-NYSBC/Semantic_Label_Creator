@@ -8,3 +8,5 @@ imagecodecs==2021.6.8
 
 scipy==1.7.0
 slcpy==0.2.1
+
+edt==2.1.1

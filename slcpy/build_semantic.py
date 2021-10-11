@@ -15,45 +15,45 @@ from slcpy.version import version
 @click.command()
 @click.option('-dir', '--dir_path',
               default=os.getcwd() + r'\data',
-              help='directory to the folder which contains *.tif files',
+              help='Directory to the folder which contains *.tif files.',
               show_default=True)
 @click.option('-o', '--output',
               default=os.getcwd() + r'\data' + r'\output',
-              help='directory to the folder where results will be saved',
+              help='Directory to the folder where results will be saved.',
               show_default=True)
 @click.option('-px', '--pixel_size',
               default=None,
               type=float,
-              help='images pixel size in Angstrom',
+              help='Images pixel size in Angstrom.',
               show_default=True)
 @click.option('-d', '--circle_size',
               default=250,
-              help='size of a circle in Angstrom for label shape',
+              help='Size of a circle in Angstrom for label shape.',
               show_default=True)
 @click.option('-l', '--multi_layer',
               default=False,
-              help='specified if lines should have independent labeling',
+              help='Specified if lines should have independent labeling.',
               show_default=True)
 @click.option('-t', '--trim_mask',
               default=True,
-              help='define if the input image has to be trim to fit labels.',
+              help='Define if the input image has to be trim to fit labels.',
               show_default=True)
 @click.option('-xy', '--trim_size_xy',
               default=None,
               type=int,
-              help='define size in pixels of output images in xy.',
+              help='Define size in pixels of output images in xy.',
               show_default=None)
 @click.option('-z', '--trim_size_z',
               default=64,
-              help='define size in pixels of output images in z.',
+              help='Define size in pixels of output images in z.',
               show_default=True)
 @click.option('-a', '--trim_all',
               default=False,
-              help='if True the whole image is used for trimming',
+              help='If True the whole image is used for trimming.',
               show_default=True)
 @click.option('-s', '--stride',
               default=25,
-              help='overlay size used for trimming images',
+              help='Overlay size used for trimming images.',
               show_default=True)
 @click.version_option(version=version)
 def main(dir_path, output,
