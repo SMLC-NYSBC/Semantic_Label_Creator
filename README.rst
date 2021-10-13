@@ -30,9 +30,6 @@ Features
 * Convert 3D point cloud from (.am) files to semantic label mask
 * Convert semantic label mask to 3D point cloud
 
-ToDo
---------
-* Cut label mask with padding
 
 ============
 Installation
