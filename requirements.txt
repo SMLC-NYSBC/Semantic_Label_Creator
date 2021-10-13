@@ -5,8 +5,8 @@ numpy~=1.21.0
 tifffile==2021.7.2
 tqdm==4.61.1
 imagecodecs==2021.6.8
-
+opencv-python>=4.5.0
 scipy==1.7.0
-slcpy==0.2.1
+slcpy>=0.2.0
 
 edt==2.1.1
