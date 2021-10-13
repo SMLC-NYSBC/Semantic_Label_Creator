@@ -17,7 +17,7 @@ def trim_images(image: np.ndarray,
 
     Args:
         image: corresponding image for the labels
-        label_mask: empty label mask
+        label_mask: empty label mask or None if image mask is not included
         trim_size_xy: size of trimming in xy dimension
         trim_size_z: size of trimming in z dimension
         multi_layer: single, or unique value for each lines
@@ -28,8 +28,11 @@ def trim_images(image: np.ndarray,
 
     if multi_layer:
         nz, ny, nx, nc = label_mask.shape
-    else:
+    elif multi_layer is False and label_mask is not None:
         nz, ny, nx = label_mask.shape
+        nc = None
+    else:
+        nz, ny, nx = image.shape
         nc = None
 
     x_axis, y_axis = nx // trim_size_xy, ny // trim_size_xy
@@ -60,32 +63,32 @@ def trim_images(image: np.ndarray,
                        nz_start:nz_end,
                        ny_start:ny_end,
                        nx_start:nx_end]
-            if nc is None:
-                trim_mk = label_mask[
-                          nz_start:nz_end,
-                          ny_start:ny_end,
-                          nx_start:nx_end]
-            else:
-                trim_mk = label_mask[
-                          nz_start:nz_end,
-                          ny_start:ny_end,
-                          nx_start:nx_end,
-                          :]
 
-            if np.all(trim_mk[:, :, :] == 0):
-                idx = idx
-            else:
-                if np.min(trim_img) < 0 == True:
-                    trim_img = trim_img + 128
-
-                tifffile.imwrite(
-                    os.path.join(output + r'\imgs', img_name),
-                    np.array(trim_img, 'int8'))
-
+            if label_mask is not None:
+                if nc is None:
+                    trim_mk = label_mask[
+                              nz_start:nz_end,
+                              ny_start:ny_end,
+                              nx_start:nx_end]
+                else:
+                    trim_mk = label_mask[
+                              nz_start:nz_end,
+                              ny_start:ny_end,
+                              nx_start:nx_end,
+                              :]
+                if np.all(trim_mk[:, :, :] == 0):
+                    idx = idx
+                else:
+                    if np.min(trim_img) < 0 == True:
+                        trim_img = trim_img + 128
                 tifffile.imwrite(
                     os.path.join(output + r'\mask', mask_name),
                     np.array(trim_mk, 'int8'))
-                idx += 1
+
+            tifffile.imwrite(
+                os.path.join(output + r'\imgs', img_name),
+                np.array(trim_img, 'int8'))
+            idx += 1
 
     return idx
 
@@ -118,8 +121,11 @@ def trim_to_patches(image: np.ndarray,
 
     if multi_layer:
         nz, ny, nx, nc = label_mask.shape
-    else:
+    elif multi_layer is False and label_mask is not None:
         nz, ny, nx = label_mask.shape
+        nc = None
+    else:
+        nz, ny, nx = image.shape
         nc = None
 
     if trim_size_xy is not None or trim_size_z is not None:
@@ -168,14 +174,16 @@ def trim_to_patches(image: np.ndarray,
     image_padded = np.pad(image,
                           [(0, z_padding), (0, y_padding), (0, x_padding)],
                           mode='constant')
-    if nc is None:
-        mask_padded = np.pad(label_mask,
-                             [(0, z_padding), (0, y_padding), (0, x_padding)],
-                             mode='constant')
-    else:
-        mask_padded = np.pad(label_mask,
-                             [(0, z_padding), (0, y_padding), (0, x_padding), (0, 0)],
-                             mode='constant')
+
+    if label_mask is not None:
+        if nc is None:
+            mask_padded = np.pad(label_mask,
+                                 [(0, z_padding), (0, y_padding), (0, x_padding)],
+                                 mode='constant')
+        else:
+            mask_padded = np.pad(label_mask,
+                                 [(0, z_padding), (0, y_padding), (0, x_padding), (0, 0)],
+                                 mode='constant')
 
     # Trim image and mask with stride
     z_start, z_stop = 0 - (trim_size_z - stride), 0
@@ -201,21 +209,23 @@ def trim_to_patches(image: np.ndarray,
                            z_start:z_stop,
                            y_start:y_stop,
                            x_start:x_stop]
-                if nc is None:
-                    trim_mk = mask_padded[
-                              z_start:z_stop,
-                              y_start:y_stop,
-                              x_start:x_stop]
-                else:
-                    trim_mk = mask_padded[
-                              z_start:z_stop,
-                              y_start:y_stop,
-                              x_start:x_stop,
-                              :]
+
+                if label_mask is not None:
+                    if nc is None:
+                        trim_mk = mask_padded[
+                                  z_start:z_stop,
+                                  y_start:y_stop,
+                                  x_start:x_stop]
+                    else:
+                        trim_mk = mask_padded[
+                                  z_start:z_stop,
+                                  y_start:y_stop,
+                                  x_start:x_stop,
+                                  :]
+                    tifffile.imwrite(
+                        os.path.join(output + r'\mask', mask_name),
+                        np.array(trim_mk, 'int8'))
 
                 tifffile.imwrite(
                     os.path.join(output + r'\imgs', img_name),
                     np.array(trim_img, 'int8'))
-                tifffile.imwrite(
-                    os.path.join(output + r'\mask', mask_name),
-                    np.array(trim_mk, 'int8'))

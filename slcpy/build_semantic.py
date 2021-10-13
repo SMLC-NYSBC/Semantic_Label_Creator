@@ -21,6 +21,10 @@ from slcpy.version import version
               default=os.getcwd() + r'\data' + r'\output',
               help='Directory to the folder where results will be saved.',
               show_default=True)
+@click.option('-m', '--mask',
+              default=True,
+              help='Indicate if mask is included.',
+              show_default=True)
 @click.option('-px', '--pixel_size',
               default=None,
               type=float,
@@ -56,7 +60,7 @@ from slcpy.version import version
               help='Overlay size used for trimming images.',
               show_default=True)
 @click.version_option(version=version)
-def main(dir_path, output,
+def main(dir_path, output, mask,
          pixel_size, circle_size,
          multi_layer,
          trim_mask, trim_size_xy, trim_size_z,
@@ -111,13 +115,19 @@ def main(dir_path, output,
         image_counter += 1
 
         if file.endswith('.tif'):
-            image, label_mask = slcpy_semantic(
-                os.path.join(dir_path, file),
-                pixel_size,
-                circle_size,
-                multi_layer,
-                trim_mask
-            )
+            if mask:
+                image, label_mask = slcpy_semantic(
+                    os.path.join(dir_path, file),
+                    mask=mask,
+                    pixel_size=pixel_size,
+                    circle_size=circle_size,
+                    multi_layer=multi_layer,
+                    trim_mask=trim_mask)
+            else:
+                image = slcpy_semantic(
+                    os.path.join(dir_path, file),
+                    mask=mask)
+                label_mask = None
 
             if trim_size_xy is None:
                 tifffile.imwrite(
@@ -125,11 +135,13 @@ def main(dir_path, output,
                     np.array(image, 'int8')
                 )
 
-                tifffile.imwrite(
-                    os.path.join(output + r'\mask', mask_name),
-                    np.array(label_mask, 'int8')
-                )
+                if mask:
+                    tifffile.imwrite(
+                        os.path.join(output + r'\mask', mask_name),
+                        np.array(label_mask, 'int8')
+                    )
             else:
+
                 if not trim_all:
                     idx = trim_images(image, label_mask,
                                       trim_size_xy, trim_size_z, multi_layer,

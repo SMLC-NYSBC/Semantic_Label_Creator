@@ -23,6 +23,7 @@ class ImportDataFromAmira:
 
     def __init__(self, src_tiff: str,
                  src_am: str,
+                 mask: bool,
                  pixel_size=None):
         self.src_tiff = src_tiff
         self.src_am = src_am
@@ -36,11 +37,12 @@ class ImportDataFromAmira:
         if not path.isfile(self.src_tiff[:-3] + "am"):
             raise Warning("Missing corresponding .am file...")
 
-        self.spatial_graph = open(
-            src_am,
-            "r",
-            encoding="iso-8859-1"
-        ).read().split("\n")
+        if mask:
+            self.spatial_graph = open(
+                src_am,
+                "r",
+                encoding="iso-8859-1"
+            ).read().split("\n")
 
     def empty_semantic_label(self):
         return np.zeros(self.image.shape, 'int8')

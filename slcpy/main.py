@@ -46,6 +46,7 @@ def trim_label_mask(points: np.ndarray,
 
 
 def slcpy_semantic(dir_path: str,
+                   mask: bool,
                    pixel_size=None,
                    circle_size=125,
                    multi_layer=False,
@@ -64,46 +65,50 @@ def slcpy_semantic(dir_path: str,
     img = ImportDataFromAmira(
         dir_path,
         dir_path[:-3] + r"CorrelationLines.am",
-        pixel_size)
-
-    label_mask = img.empty_semantic_label()
+        mask=mask,
+        pixel_size=pixel_size)
     image = img.image_data()
 
-    if pixel_size is None:
-        pixel_size = img.pixel_size_in_et()
-        print(" Detected pixel size was {}".format(pixel_size))
+    if mask:
+        label_mask = img.empty_semantic_label()
 
-    segments = img.get_segments()
-    points = img.get_points().round()
-    r = round((circle_size / 2) / pixel_size)
+        if pixel_size is None:
+            pixel_size = img.pixel_size_in_et()
+            print(" Detected pixel size was {}".format(pixel_size))
 
-    if trim_mask:
-        image, label_mask, points = trim_label_mask(
-            points,
-            image,
-            label_mask)
+        segments = img.get_segments()
+        points = img.get_points().round()
+        r = round((circle_size / 2) / pixel_size)
 
-    if multi_layer:
-        label_mask = np.stack((label_mask,) * 3, axis=-1)
-        segment_color = [255, 255, 255]
-    else:
-        segment_color = [1]
-
-    for i in tqdm(range(len(segments))):
-        sleep(0.001)
-
-        start_point = int(sum(segments[0:i]))
-        stop_point = start_point + int(segments[i])
-        mt = interpolation_3D(points[start_point:stop_point])
+        if trim_mask:
+            image, label_mask, points = trim_label_mask(
+                points,
+                image,
+                label_mask)
 
         if multi_layer:
-            segment_color = list(np.random.choice(range(256), size=3))
+            label_mask = np.stack((label_mask,) * 3, axis=-1)
+            segment_color = [255, 255, 255]
+        else:
+            segment_color = [1]
 
-        for j in range(len(mt)):
-            c = mt[j, :3]
-            label_mask = draw_label(r, c, label_mask, segment_color)
+        for i in tqdm(range(len(segments))):
+            sleep(0.001)
 
-    return image, label_mask
+            start_point = int(sum(segments[0:i]))
+            stop_point = start_point + int(segments[i])
+            mt = interpolation_3D(points[start_point:stop_point])
+
+            if multi_layer:
+                segment_color = list(np.random.choice(range(256), size=3))
+
+            for j in range(len(mt)):
+                c = mt[j, :3]
+                label_mask = draw_label(r, c, label_mask, segment_color)
+
+        return image, label_mask
+
+    return image
 
 
 def slcpy_graph(dir_path: str,
