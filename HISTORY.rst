@@ -1,7 +1,7 @@
 =======
 History
 =======
-0.2.2 (2021-10-12)
+0.3.0 (2021-10-12)
 -------------------
 * Remove pixel size calculation interchange to extracting information from (.am) files
 * Added module for extracting 3D coordinates for point cloud from semantic label mask
