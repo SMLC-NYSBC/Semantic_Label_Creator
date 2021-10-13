@@ -106,7 +106,9 @@ def slcpy_semantic(dir_path: str,
     return image, label_mask
 
 
-def slcpy_graph(dir_path: str):
+def slcpy_graph(dir_path: str,
+                filter: int,
+                clean_graph: bool):
     """
         Class module to load 3D .tif file
 
@@ -116,7 +118,8 @@ def slcpy_graph(dir_path: str):
 
     img = ImportSemanticMask(src_tiff=dir_path)
 
-    return img.find_maximas()
+    return img.find_maximas(filter_small_object=filter,
+                            clean_close_point=clean_graph)
 
 
 def slcpy_stitch(dir_path: str,

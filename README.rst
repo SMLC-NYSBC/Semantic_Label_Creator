@@ -127,7 +127,7 @@ with terminal to build point cloud from image::
     [-default]  os.getcwd() + r'\data' + r'\output'
  string [-s]   Define format of output point cloud.
     [-default] csv
-    [-option] csv, np
+    [-option] all, csv, numpy
 
 Credits
 -------

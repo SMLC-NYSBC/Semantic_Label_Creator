@@ -1,6 +1,9 @@
+import itertools
+import math
 from os import path
 from time import sleep
 
+import cv2
 import edt
 import numpy as np
 from skimage import io
@@ -187,6 +190,9 @@ class ImportSemanticMask:
 
     Args:
         src_tiff: source of the 3D .tif file
+        filter_small_object: Filter size to remove small object .
+        clean_close_point: If True, close point will be removed.
+
     """
 
     def __init__(self,
@@ -202,16 +208,41 @@ class ImportSemanticMask:
     def image_data(self):
         return self.image
 
-    def find_maximas(self):
+    def _remove_close_point(self,
+                            maxima: list,
+                            threshold: int):
+        combos = itertools.combinations(maxima, 2)
+
+        points_to_remove = [point2 for point1, point2 in combos if math.dist(point1, point2) <= threshold]
+        points_to_keep = [point for point in maxima if point not in points_to_remove]
+
+        return points_to_keep
+
+    def find_maximas(self,
+                     filter_small_object: int,
+                     clean_close_point: bool):
         """At each z position find point maximas and store their coordinates"""
+
         x, y, z = [], [], []
 
         for i in tqdm(range(self.image.shape[0])):
             sleep(0.001)
-            img_slice = self.image[i, :, :]
+            img_slice = self.image[i, :, :].astype('uint8')
 
-            dist_matrix = edt.edt(img_slice)
+            # Remove noise
+            ret, thresh = cv2.threshold(img_slice, 0, 255, cv2.THRESH_BINARY)
+            kernel = np.ones((filter_small_object,
+                              filter_small_object), np.uint8)
+            denoise_image = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+
+            # Calculate distance matrix for labels
+            dist_matrix = edt.edt(denoise_image)
             slice_maxima = peak_local_max(dist_matrix, labels=img_slice)
+
+            # Remove points that are closer then 2px from each other in 2D
+            if clean_close_point:
+                slice_maxima = self._remove_close_point(slice_maxima.tolist(), 2)
+                slice_maxima = np.array(slice_maxima)
 
             z = np.append(z, np.repeat(i, len(slice_maxima)))
             y = np.append(y, slice_maxima[:, 0])

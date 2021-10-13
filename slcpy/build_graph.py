@@ -18,6 +18,14 @@ from slcpy.version import version
               default=os.getcwd() + r'\data' + r'\output',
               help='Directory to the folder where results will be saved.',
               show_default=True)
+@click.option('-f', '--filter',
+              default=6,
+              help='Filter size matrix for denoising.',
+              show_default=True)
+@click.option('-c', '--clean_graph',
+              default=True,
+              help='Clean graph from neighborhood points.',
+              show_default=True)
 @click.option('-s', '--save',
               default="numpy",
               help='Save data as numpy .py or .csv.',
@@ -26,6 +34,8 @@ from slcpy.version import version
 @click.version_option(version=version)
 def main(dir_path: str,
          output: str,
+         filter: int,
+         clean_graph: bool,
          save: str):
     """
     Main module for composing semantic label from given point cloud
@@ -33,7 +43,9 @@ def main(dir_path: str,
     Args:
         -dir / dir_path: Directory to the folder with image dataset.
         -o / output: Output directory for saving transformed files.
-        -s / save: select type of saved data other numpy .py or .csv
+        -f / filter: filter size matrix for denoising
+        -c /clean_graph: Clean graph from neighborhood points.
+        -s / save: select type of saved data other numpy .npy or .csv
     """
 
     for file in tqdm(os.listdir(dir_path)):
@@ -41,12 +53,20 @@ def main(dir_path: str,
 
         if file.endswith('.tif'):
             coords = slcpy_graph(
-                os.path.join(dir_path, file)
+                os.path.join(dir_path, file),
+                filter,
+                clean_graph
             )
             if save == "numpy":
                 np.save(os.path.join(output, file[:-4]),
                         coords)
             elif save == "csv":
+                np.savetxt(os.path.join(output, str(file[:-4] + ".csv")),
+                           coords,
+                           delimiter=",")
+            elif save == "all":
+                np.save(os.path.join(output, file[:-4]),
+                        coords)
                 np.savetxt(os.path.join(output, str(file[:-4] + ".csv")),
                            coords,
                            delimiter=",")
