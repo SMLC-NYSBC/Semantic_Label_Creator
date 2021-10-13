@@ -75,7 +75,7 @@ def trim_images(image: np.ndarray,
             if np.all(trim_mk[:, :, :] == 0):
                 idx = idx
             else:
-                if np.min(trim_img) < 0 is True:
+                if np.min(trim_img) < 0 == True:
                     trim_img = trim_img + 128
 
                 tifffile.imwrite(
