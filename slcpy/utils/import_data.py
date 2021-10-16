@@ -1,11 +1,11 @@
 import itertools
 import math
 from os import path
-from time import sleep
 
 import cv2
 import edt
 import numpy as np
+from scipy.spatial import distance, distance_matrix
 from skimage import io
 from skimage.feature import peak_local_max
 from tqdm import tqdm
@@ -220,15 +220,26 @@ class ImportSemanticMask:
 
         return points_to_keep
 
+    def _closest_node(self,
+                      node,
+                      nodes,
+                      threshold):
+        closest_index = distance.cdist([node], nodes)
+        return closest_index[closest_index < threshold]
+
     def find_maximas(self,
                      filter_small_object: int,
-                     clean_close_point: bool):
+                     clean_close_point: bool,
+                     down_sampling: int):
         """At each z position find point maximas and store their coordinates"""
 
         x, y, z = [], [], []
+        batch_iter = tqdm(range(self.image.shape[0]),
+                          'Building a point cloud',
+                          total=self.image.shape[0],
+                          leave=False)
 
-        for i in tqdm(range(self.image.shape[0])):
-            sleep(0.001)
+        for i in batch_iter:
             img_slice = self.image[i, :, :].astype('uint8')
 
             # Remove noise
@@ -249,6 +260,11 @@ class ImportSemanticMask:
             z = np.append(z, np.repeat(i, len(slice_maxima)))
             y = np.append(y, slice_maxima[:, 0])
             x = np.append(x, slice_maxima[:, 1])
-        coordinates = np.array((z, y, x))
+        coordinates = np.array((z, y, x)).astype('uint16').T
 
-        return coordinates.T
+        """ Down-sampling point cloud """
+        for sampling in range(down_sampling):
+            sorted_idx = np.lexsort(coordinates.T)
+            sorted_data = coordinates[sorted_idx, :]
+            coordinates = sorted_data[::2]
+        return coordinates

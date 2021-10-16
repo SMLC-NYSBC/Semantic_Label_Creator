@@ -92,7 +92,11 @@ def slcpy_semantic(dir_path: str,
         else:
             segment_color = [1]
 
-        for i in tqdm(range(len(segments))):
+        batch_iter = tqdm(range(len(segments)),
+                          'Building semantic mask',
+                          total=len(segments),
+                          leave=False)
+        for i in batch_iter:
             sleep(0.001)
 
             start_point = int(sum(segments[0:i]))
@@ -111,22 +115,6 @@ def slcpy_semantic(dir_path: str,
     return image
 
 
-def slcpy_graph(dir_path: str,
-                filter: int,
-                clean_graph: bool):
-    """
-        Class module to load 3D .tif file
-
-    Args:
-        dir_path: path direction of the input file *.tif with semantic masks
-    """
-
-    img = ImportSemanticMask(src_tiff=dir_path)
-
-    return img.find_maximas(filter_small_object=filter,
-                            clean_close_point=clean_graph)
-
-
 def slcpy_stitch(dir_path: str,
                  mask: bool,
                  prefix=None):
@@ -136,3 +124,23 @@ def slcpy_stitch(dir_path: str,
                           prefix=prefix)
 
     return stitch_img
+
+
+def slcpy_graph(dir_path: str,
+                filter_img: int,
+                clean_graph: bool,
+                down_sampling:int):
+    """
+        Class module to load 3D .tif file
+
+    Args:
+        dir_path: path direction of the input file *.tif with semantic masks
+        filter_img:
+        clean_graph:
+    """
+
+    img = ImportSemanticMask(src_tiff=dir_path)
+
+    return img.find_maximas(filter_small_object=filter_img,
+                            clean_close_point=clean_graph,
+                            down_sampling=down_sampling)

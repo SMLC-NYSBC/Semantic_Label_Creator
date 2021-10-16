@@ -107,7 +107,7 @@ with terminal to stitch images::
  string [-dir] Directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'
  string [-o]   Output directory to the folder where all of converted filed are stored.
-    [-default]  os.getcwd() + r'\data' + r'\output'
+    [-default] os.getcwd() + r'\data' + r'\output'
  bool   [-m]   If True output images are treated as mask not images.
     [-default] True
  string [-pf]  Additional prefix name for each image.
@@ -121,7 +121,11 @@ with terminal to build point cloud from image::
  string [-dir] Directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'
  string [-o]   Output directory to the folder where all of converted filed are stored.
-    [-default]  os.getcwd() + r'\data' + r'\output'
+    [-default] os.getcwd() + r'\data' + r'\output'
+ string [-c]   Clean graph from neighborhood points.
+    [-default] True
+ string [-d]   Down-sample point cloud by the factor of.
+    [-default] 2
  string [-s]   Define format of output point cloud.
     [-default] csv
     [-option] all, csv, numpy

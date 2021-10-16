@@ -3,6 +3,7 @@ from os.path import isfile, join
 
 import numpy as np
 from tifffile import tifffile
+from tqdm import tqdm
 
 
 class StitchImages:
@@ -55,12 +56,22 @@ class StitchImages:
         if self.z == 0:
             self.z = 1
 
-        for i in range(self.z):
+        batch_iter_z = tqdm(range(self.z),
+                            'Stitching images in Z',
+                            total=len(range(self.z)),
+                            leave=False)
+
+        batch_iter_y = tqdm(range(self.y),
+                            'Stitching images in XY',
+                            total=len(range(self.y)),
+                            leave=False)
+
+        for i in batch_iter_z:
             z_start = z_start + self.nz - self.stride
             z_stop = z_start + self.nz
             y_start, y_stop = 0 - (self.ny - self.stride), 0
 
-            for j in range(self.y):
+            for j in batch_iter_y:
                 y_start = y_start + self.ny - self.stride
                 y_stop = y_start + self.ny
                 x_start, x_stop = 0 - (self.nx - self.stride), 0

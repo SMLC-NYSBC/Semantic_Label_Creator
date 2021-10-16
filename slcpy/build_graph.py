@@ -26,6 +26,10 @@ from slcpy.version import version
               default=True,
               help='Clean graph from neighborhood points.',
               show_default=True)
+@click.option('-d', '--down_sampling',
+              default=2,
+              help='Down-sample point cloud by the factor of...',
+              show_default=True)
 @click.option('-s', '--save',
               default="numpy",
               help='Save data as numpy .py or .csv.',
@@ -36,6 +40,7 @@ def main(dir_path: str,
          output: str,
          filter: int,
          clean_graph: bool,
+         down_sampling: int,
          save: str):
     """
     Main module for composing semantic label from given point cloud
@@ -53,9 +58,10 @@ def main(dir_path: str,
 
         if file.endswith('.tif'):
             coords = slcpy_graph(
-                os.path.join(dir_path, file),
-                filter,
-                clean_graph
+                dir_path=os.path.join(dir_path, file),
+                filter_img=filter,
+                clean_graph=clean_graph,
+                down_sampling=down_sampling
             )
             if save == "numpy":
                 np.save(os.path.join(output, file[:-4]),

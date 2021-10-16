@@ -108,7 +108,13 @@ def main(dir_path, output, mask,
 
     image_counter = 0
     idx = 0
-    for file in tqdm(os.listdir(dir_path)):
+
+    batch_iter = tqdm(os.listdir(dir_path),
+                      'Building Semantic patch images',
+                      total=len(os.listdir(dir_path)),
+                      leave=False)
+
+    for file in batch_iter:
         sleep(0.001)
         img_name = str(image_counter) + r'.tif'
         mask_name = str(image_counter) + r'_mask.tif'
