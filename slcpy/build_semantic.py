@@ -21,65 +21,70 @@ from slcpy.version import version
               default=os.getcwd() + r'\data' + r'\output',
               help='Directory to the folder where results will be saved.',
               show_default=True)
-@click.option('-m', '--mask',
+@click.option('-m', '--build_mask',
               default=True,
               help='Indicate if mask is included.',
               show_default=True)
 @click.option('-px', '--pixel_size',
               default=None,
               type=float,
-              help='Images pixel size in Angstrom.',
+              help='Images pixel size in Angstrom. If None pixel size is calculated'
+                   'from image metadata.',
               show_default=True)
 @click.option('-d', '--circle_size',
               default=250,
               help='Size of a circle in Angstrom for label shape.',
               show_default=True)
-@click.option('-l', '--multi_layer',
+@click.option('-l', '--multi_classification',
               default=False,
               help='Specified if lines should have independent labeling.',
               show_default=True)
-@click.option('-t', '--trim_mask',
+@click.option('-t', '--pretrim_mask',
               default=True,
               help='Define if the input image has to be trim to fit labels.',
               show_default=True)
 @click.option('-xy', '--trim_size_xy',
-              default=None,
-              type=int,
+              default=64,
               help='Define size in pixels of output images in xy.',
               show_default=None)
 @click.option('-z', '--trim_size_z',
               default=64,
               help='Define size in pixels of output images in z.',
               show_default=True)
-@click.option('-a', '--trim_all',
+@click.option('-a', '--filter_empty_patches',
               default=False,
-              help='If True the whole image is used for trimming.',
+              help='If True only images with mask containing any labeling are saved.',
               show_default=True)
 @click.option('-s', '--stride',
               default=25,
               help='Overlay size used for trimming images.',
               show_default=True)
 @click.version_option(version=version)
-def main(dir_path, output, mask,
-         pixel_size, circle_size,
-         multi_layer,
-         trim_mask, trim_size_xy, trim_size_z,
-         trim_all, stride):
+def main(dir_path, output,
+         build_mask,
+         pixel_size,
+         circle_size,
+         multi_classification,
+         pretrim_mask,
+         trim_size_xy, trim_size_z,
+         filter_empty_patches,
+         stride):
     """
     Main module for composing semantic label from given point cloud
 
     Args:
         -dir / dir_path: Directory to the folder with image dataset.
         -o / output: Output directory for saving transformed files.
+        -m / build_mask: Define if the semantic mask should be build and saved.
         -px / pixel_size: Pixel size for all images. Note that if images has different
             pixel size set to None to automatically calculate it for each image.
        -d / circle_size: Size of drawn circle in Angstrom.
-       -l / multi_layer: If True as an output each line is drawn with unique label.
-       -t / trim_mask: If True the image mask will be trimmed before building label
+       -l / multi_classification: If True as an output each line is drawn with unique label.
+       -t / pretrim_mask: If True the image mask will be trimmed before building label
             mask. It's helpful for big files to speed up computation.
        -xy / trim_size_xy: Final XY dimension of output images.
        -z / time_size_z: Final Z dimension of output images.
-       -a / trim_all: Use whole image for trimming
+       -a / filter_empty_patches: Use whole image for trimming
        -s / stride: stride for patch step size with overlay
     """
 
@@ -121,18 +126,18 @@ def main(dir_path, output, mask,
         image_counter += 1
 
         if file.endswith('.tif'):
-            if mask:
+            if build_mask:
                 image, label_mask = slcpy_semantic(
                     os.path.join(dir_path, file),
-                    mask=mask,
+                    mask=build_mask,
                     pixel_size=pixel_size,
                     circle_size=circle_size,
-                    multi_layer=multi_layer,
-                    trim_mask=trim_mask)
+                    multi_layer=multi_classification,
+                    trim_mask=pretrim_mask)
             else:
                 image = slcpy_semantic(
                     os.path.join(dir_path, file),
-                    mask=mask)
+                    mask=build_mask)
                 label_mask = None
 
             if trim_size_xy is None:
@@ -141,20 +146,20 @@ def main(dir_path, output, mask,
                     np.array(image, 'int8')
                 )
 
-                if mask:
+                if build_mask:
                     tifffile.imwrite(
                         os.path.join(output + r'\mask', mask_name),
                         np.array(label_mask, 'int8')
                     )
             else:
 
-                if not trim_all:
+                if not filter_empty_patches:
                     idx = trim_images(image, label_mask,
-                                      trim_size_xy, trim_size_z, multi_layer,
+                                      trim_size_xy, trim_size_z, multi_classification,
                                       output, idx)
                 else:
                     idx = trim_to_patches(image, label_mask,
-                                          trim_size_xy, trim_size_z, multi_layer,
+                                          trim_size_xy, trim_size_z, multi_classification,
                                           output, stride)
 
 
