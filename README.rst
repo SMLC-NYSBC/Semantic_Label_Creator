@@ -2,18 +2,15 @@
 Semantic Label Converter [slcpy]
 ================================
 
-.. image:: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
-        :target: https://img.shields.io/github/v/release/RRobert92/Semantic_Label_Creator
+.. image:: https://img.shields.io/github/v/release/SMLC-NYSBC/Semantic_Label_Creator
+        :target: https://img.shields.io/github/v/release/SMLC-NYSBC/Semantic_Label_Creator
 
-.. image:: https://github.com/RRobert92/Semantic_Label_Creator/actions/workflows/python-publish_PyPi.yml/badge.svg
-        :target: https://github.com/RRobert92/Semantic_Label_Creator/actions/workflows/python-publish_PyPi.yml
+.. image:: https://github.com/SMLC-NYSBC/Semantic_Label_Creator/actions/workflows/python-publish_PyPi.yml/badge.svg
+        :target: https://github.com/SMLC-NYSBC/Semantic_Label_Creator/actions/workflows/python-publish_PyPi.yml
 
 .. image:: https://readthedocs.org/projects/semantic-label-creator/badge/?version=latest
         :target: https://semantic-label-creator.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
-
-.. image:: https://www.codefactor.io/repository/github/rrobert92/semantic_label_creator/badge
-        :target: https://img.shields.io/github/v/release/RRobert92
 
 Python package for converting segmented point cloud to trimmed semantic label masks
 as well as converting unsegmented semantic labels into a general point cloud.
@@ -28,6 +25,7 @@ all points maxima's and saving their 3D coordinates in array.
 Features
 --------
 * Convert 3D point cloud from (.am) files to semantic label mask
+* Cut and stitch images/masks withe predefined settings
 * Convert semantic label mask to 3D point cloud
 
 
@@ -56,7 +54,7 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/RRobert92/Semantic_Label_Creator
+    $ git clone git://github.com/SMLC-NYSBC/Semantic_Label_Creator
     $ python setup.py install
 
 or install is with pip:
@@ -66,8 +64,8 @@ or install is with pip:
     $ pip install slcpy
 
 
-.. _Github repo: https://github.com/RRobert92/Semantic_Label_Creator
-.. _tarball: https://github.com/RRobert92/Semantic_Label_Creator/tarball/master
+.. _Github repo: https://github.com/SMLC-NYSBC/Semantic_Label_Creator
+.. _tarball: https://github.com/SMLC-NYSBC/Semantic_Label_Creator/tarball/master
 
 =====
 Usage
@@ -129,10 +127,3 @@ with terminal to build point cloud from image::
  string [-s]   Define format of output point cloud.
     [-default] csv
     [-option] all, csv, numpy
-
-Credits
--------
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
