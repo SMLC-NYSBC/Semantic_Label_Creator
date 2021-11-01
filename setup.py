@@ -13,10 +13,10 @@ requirements = ['click==8.0.1',
                 'numpy==1.21.0',
                 'tifffile==2021.7.2',
                 'tqdm == 4.61.1',
-                'imagecodecs == 2021.6.8',
+                'imagecodecs==2021.6.8',
+                'edt==2.1.1',
+                'opencv-python>=4.5.0',
                 ]
-
-test_requirements = []
 
 setup(
     author="Robert Kiewisz",
@@ -29,7 +29,8 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python :: 3.8',
     ],
-    description="Python package to decode Amira 3D coordinate spatial graphs into semantic label mask",
+    description="Python package to decode Amira 3D coordinate spatial graphs "
+                "into semantic label mask",
     entry_points={
         'console_scripts': [
             'slcpy_semantic=slcpy.build_semantic:main',
@@ -47,9 +48,7 @@ setup(
     packages=find_packages(include=['slcpy',
                                     'slcpy.*',
                                     'slcpy.utils.*']),
-    test_suite='tests',
-    tests_require=test_requirements,
-    url='https://github.com/RRobert92/Semantic_Label_Creator',
+    url='https://github.com/SMLC-NYSBC/Semantic_Label_Creator',
     version=version,
     zip_safe=False,
 )

@@ -28,8 +28,8 @@ from slcpy.version import version
 @click.option('-px', '--pixel_size',
               default=None,
               type=float,
-              help='Images pixel size in Angstrom. If None pixel size is calculated'
-                   'from image metadata.',
+              help='Images pixel size in Angstrom. If None pixel size '
+                   'is calculated from image metadata.',
               show_default=True)
 @click.option('-d', '--circle_size',
               default=250,
@@ -53,7 +53,7 @@ from slcpy.version import version
               show_default=True)
 @click.option('-a', '--filter_empty_patches',
               default=False,
-              help='If True only images with mask containing any labeling are saved.',
+              help='If True only images containing any data are saved.',
               show_default=True)
 @click.option('-s', '--stride',
               default=25,
@@ -76,11 +76,14 @@ def main(dir_path, output,
         -dir / dir_path: Directory to the folder with image dataset.
         -o / output: Output directory for saving transformed files.
         -m / build_mask: Define if the semantic mask should be build and saved.
-        -px / pixel_size: Pixel size for all images. Note that if images has different
-            pixel size set to None to automatically calculate it for each image.
+        -px / pixel_size: Pixel size for all images. Note that if images has
+            different pixel size set to None to automatically calculate it
+            for each image.
        -d / circle_size: Size of drawn circle in Angstrom.
-       -l / multi_classification: If True as an output each line is drawn with unique label.
-       -t / pretrim_mask: If True the image mask will be trimmed before building label
+       -l / multi_classification: If True as an output each line is drawn
+            with unique label.
+       -t / pretrim_mask: If True the image mask will be trimmed before
+            building label
             mask. It's helpful for big files to speed up computation.
        -xy / trim_size_xy: Final XY dimension of output images.
        -z / time_size_z: Final Z dimension of output images.
@@ -155,11 +158,13 @@ def main(dir_path, output,
 
                 if not filter_empty_patches:
                     idx = trim_images(image, label_mask,
-                                      trim_size_xy, trim_size_z, multi_classification,
+                                      trim_size_xy, trim_size_z,
+                                      multi_classification,
                                       output, idx)
                 else:
                     idx = trim_to_patches(image, label_mask,
-                                          trim_size_xy, trim_size_z, multi_classification,
+                                          trim_size_xy, trim_size_z,
+                                          multi_classification,
                                           output, stride)
 
 

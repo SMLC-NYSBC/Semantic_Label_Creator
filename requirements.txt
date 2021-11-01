@@ -6,4 +6,4 @@ tifffile==2021.7.2
 tqdm==4.61.1
 imagecodecs==2021.6.8
 opencv-python>=4.5.0
-edt==2.1.1
+edt>=2.1.0

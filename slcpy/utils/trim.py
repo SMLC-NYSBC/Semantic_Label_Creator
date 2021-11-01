@@ -59,23 +59,20 @@ def trim_images(image: np.ndarray,
             img_name = str(idx) + r'.tif'
             mask_name = str(idx) + r'_mask.tif'
 
-            trim_img = image[
-                       nz_start:nz_end,
-                       ny_start:ny_end,
-                       nx_start:nx_end]
+            trim_img = image[nz_start:nz_end,
+                             ny_start:ny_end,
+                             nx_start:nx_end]
 
             if label_mask is not None:
                 if nc is None:
-                    trim_mk = label_mask[
-                              nz_start:nz_end,
-                              ny_start:ny_end,
-                              nx_start:nx_end]
+                    trim_mk = label_mask[nz_start:nz_end,
+                                         ny_start:ny_end,
+                                         nx_start:nx_end]
                 else:
-                    trim_mk = label_mask[
-                              nz_start:nz_end,
-                              ny_start:ny_end,
-                              nx_start:nx_end,
-                              :]
+                    trim_mk = label_mask[nz_start:nz_end,
+                                         ny_start:ny_end,
+                                         nx_start:nx_end,
+                                         :]
                 if np.all(trim_mk[:, :, :] == 0):
                     idx = idx
                 else:
@@ -140,9 +137,7 @@ def trim_to_patches(image: np.ndarray,
         trim_size_z = 64
 
     # Calculate number of patches, patch sizes, and stride for xyz
-    x, y, z = math.ceil(nx / trim_size_xy), \
-              math.ceil(ny / trim_size_xy), \
-              math.ceil(nz / trim_size_z)
+    x, y, z = math.ceil(nx / trim_size_xy), math.ceil(ny / trim_size_xy), math.ceil(nz / trim_size_z)
 
     x_padding, y_padding, z_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx, \
                                       (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny, \
@@ -206,23 +201,20 @@ def trim_to_patches(image: np.ndarray,
                 img_name = str("{}_{}_{}_{}.tif".format(k, j, i, stride))
                 mask_name = str("{}_{}_{}_{}_mask.tif".format(k, j, i, stride))
 
-                trim_img = image_padded[
-                           z_start:z_stop,
-                           y_start:y_stop,
-                           x_start:x_stop]
+                trim_img = image_padded[z_start:z_stop,
+                                        y_start:y_stop,
+                                        x_start:x_stop]
 
                 if label_mask is not None:
                     if nc is None:
-                        trim_mk = mask_padded[
-                                  z_start:z_stop,
-                                  y_start:y_stop,
-                                  x_start:x_stop]
+                        trim_mk = mask_padded[z_start:z_stop,
+                                              y_start:y_stop,
+                                              x_start:x_stop]
                     else:
-                        trim_mk = mask_padded[
-                                  z_start:z_stop,
-                                  y_start:y_stop,
-                                  x_start:x_stop,
-                                  :]
+                        trim_mk = mask_padded[z_start:z_stop,
+                                              y_start:y_stop,
+                                              x_start:x_stop,
+                                              :]
                     tifffile.imwrite(
                         os.path.join(output + r'\mask', mask_name),
                         np.array(trim_mk, 'int8'))

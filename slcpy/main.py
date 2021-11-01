@@ -27,16 +27,12 @@ def trim_label_mask(points: np.ndarray,
     if min_z < 0:
         min_z = 0
 
-    image_trim = image[
-                 int(min_z):int(max_z),
-                 int(min_y):int(max_y),
-                 int(min_x):int(max_x)
-                 ]
-    label_mask_trim = label_mask[
-                      int(min_z):int(max_z),
-                      int(min_y):int(max_y),
-                      int(min_x):int(max_x)
-                      ]
+    image_trim = image[int(min_z):int(max_z),
+                       int(min_y):int(max_y),
+                       int(min_x):int(max_x)]
+    label_mask_trim = label_mask[int(min_z):int(max_z),
+                                 int(min_y):int(max_y),
+                                 int(min_x):int(max_x)]
 
     points[:, 0] = points[:, 0] - min_x
     points[:, 1] = points[:, 1] - min_y
@@ -129,14 +125,15 @@ def slcpy_stitch(dir_path: str,
 def slcpy_graph(dir_path: str,
                 filter_img: int,
                 clean_graph: bool,
-                down_sampling:int):
+                down_sampling: int):
     """
         Class module to load 3D .tif file
 
     Args:
-        dir_path: path direction of the input file *.tif with semantic masks
-        filter_img:
-        clean_graph:
+        dir_path: Path direction of the input file *.tif with semantic masks.
+        filter_img: Filter size for cleaning lonely pixels.
+        clean_graph: If True a output graph is cleaned.
+        down_sampling: Number of downsample iterations.
     """
 
     img = ImportSemanticMask(src_tiff=dir_path)

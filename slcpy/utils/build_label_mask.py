@@ -32,7 +32,7 @@ def draw_label(r: int,
     if z == nz:
         z = z - 1
 
-    if z in range(nz+1):
+    if z in range(nz + 1):
         cy, cx = draw.disk((y, x), r, shape=(ny, nx))
 
         if nc > 1:

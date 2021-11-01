@@ -5,7 +5,7 @@ from os import path
 import cv2
 import edt
 import numpy as np
-from scipy.spatial import distance, distance_matrix
+from scipy.spatial import distance
 from skimage import io
 from skimage.feature import peak_local_max
 from tqdm import tqdm
@@ -53,7 +53,8 @@ class ImportDataFromAmira:
     def get_segments(self):
         # Find line starting with EDGE { int NumEdgePoints }
         segments = str([
-            word for word in self.spatial_graph if word.startswith('EDGE { int NumEdgePoints }')
+            word for word in self.spatial_graph if
+            word.startswith('EDGE { int NumEdgePoints }')
         ])
         segment_start = "".join((ch if ch in "0123456789" else " ") for ch in segments)
         segment_start = [int(i) for i in segment_start.split()]
@@ -155,12 +156,12 @@ class ImportDataFromAmira:
 
             try:
                 physical_size = str([
-                    word for word in lines_in_et if word.startswith('        XLen') or
-                                                    word.startswith('        xLen')
+                    word for word in lines_in_et if
+                    word.startswith('        XLen') or word.startswith('        xLen')
                 ]).split(" ")
                 pixel_size = str([
-                    word for word in lines_in_et if word.startswith('        Nx') or
-                                                    word.startswith('        nx')
+                    word for word in lines_in_et if
+                    word.startswith('        Nx') or word.startswith('        nx')
                 ]).split(" ")
 
                 physical_size = float(physical_size[9][:-3])
