@@ -1,6 +1,10 @@
 =======
 History
 =======
+0.3.1 (2021-10-31)
+-------------------
+* Maintained update
+
 0.3.0 (2021-10-12)
 -------------------
 * Remove pixel size calculation interchange to extracting information from (.am) files

@@ -79,16 +79,17 @@ def trim_images(image: np.ndarray,
                 if np.all(trim_mk[:, :, :] == 0):
                     idx = idx
                 else:
-                    if np.min(trim_img) < 0 == True:
+                    # Hard transform between int8 and uint8
+                    if np.min(trim_img) < 0:
                         trim_img = trim_img + 128
-                tifffile.imwrite(
-                    os.path.join(output + r'\mask', mask_name),
-                    np.array(trim_mk, 'int8'))
 
-            tifffile.imwrite(
-                os.path.join(output + r'\imgs', img_name),
-                np.array(trim_img, 'int8'))
-            idx += 1
+                    tifffile.imwrite(
+                        os.path.join(output + r'\mask', mask_name),
+                        np.array(trim_mk, 'int8'))
+                    tifffile.imwrite(
+                        os.path.join(output + r'\imgs', img_name),
+                        np.array(trim_img, 'int8'))
+                    idx += 1
 
     return idx
 
