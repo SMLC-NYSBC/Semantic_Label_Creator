@@ -21,7 +21,7 @@ requirements = ['click==8.0.1',
 setup(
     author="Robert Kiewisz",
     author_email='robert.kiewisz@gmail.com',
-    python_requires='>=3.8',
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

@@ -114,6 +114,15 @@ def slcpy_semantic(dir_path: str,
 def slcpy_stitch(dir_path: str,
                  mask: bool,
                  prefix=None):
+    """
+        Class module to stitched segmented images
+
+    Args:
+        dir_path: Path direction of the input file *.tif with semantic masks.
+        mask: If True images are treated as Semantic mask not image.
+        prefix: Prefix name for the Images.
+    """
+
     stitcher = StitchImages()
     stitch_img = stitcher(dir_path=dir_path,
                           mask=mask,
@@ -127,7 +136,7 @@ def slcpy_graph(dir_path: str,
                 clean_graph: bool,
                 down_sampling: int):
     """
-        Class module to load 3D .tif file
+        Class module to build point cloud from 3d .tiff
 
     Args:
         dir_path: Path direction of the input file *.tif with semantic masks.
