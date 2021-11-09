@@ -60,7 +60,8 @@ from slcpy.version import version
               help='Overlay size used for trimming images.',
               show_default=True)
 @click.version_option(version=version)
-def main(dir_path, output,
+def main(dir_path,
+         output,
          build_mask,
          pixel_size,
          circle_size,

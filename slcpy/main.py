@@ -52,6 +52,7 @@ def slcpy_semantic(dir_path: str,
 
     Args:
         dir_path: path direction of the input file *.tif
+        mask: If True
         pixel_size: pixel size in Angstrom
         circle_size: size of a circle the label mask in Angstrom
         trim_mask: True/False statement for trimming input data

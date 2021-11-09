@@ -1,5 +1,6 @@
 import math
 import os
+from typing import Optional
 
 import numpy as np
 from tifffile import tifffile
@@ -60,19 +61,19 @@ def trim_images(image: np.ndarray,
             mask_name = str(idx) + r'_mask.tif'
 
             trim_img = image[nz_start:nz_end,
-                             ny_start:ny_end,
-                             nx_start:nx_end]
+                       ny_start:ny_end,
+                       nx_start:nx_end]
 
             if label_mask is not None:
                 if nc is None:
                     trim_mk = label_mask[nz_start:nz_end,
-                                         ny_start:ny_end,
-                                         nx_start:nx_end]
+                              ny_start:ny_end,
+                              nx_start:nx_end]
                 else:
                     trim_mk = label_mask[nz_start:nz_end,
-                                         ny_start:ny_end,
-                                         nx_start:nx_end,
-                                         :]
+                              ny_start:ny_end,
+                              nx_start:nx_end,
+                              :]
                 if np.all(trim_mk[:, :, :] == 0):
                     idx = idx
                 else:
@@ -92,11 +93,11 @@ def trim_images(image: np.ndarray,
 
 
 def trim_to_patches(image: np.ndarray,
-                    label_mask: np.ndarray,
                     trim_size_xy: int,
                     trim_size_z: int,
                     multi_layer: bool,
                     output: str,
+                    label_mask: Optional[np.ndarray] = None,
                     stride=25):
     """
     Function to trimmed image and mask with to specified size
@@ -202,19 +203,19 @@ def trim_to_patches(image: np.ndarray,
                 mask_name = str("{}_{}_{}_{}_mask.tif".format(k, j, i, stride))
 
                 trim_img = image_padded[z_start:z_stop,
-                                        y_start:y_stop,
-                                        x_start:x_stop]
+                           y_start:y_stop,
+                           x_start:x_stop]
 
                 if label_mask is not None:
                     if nc is None:
                         trim_mk = mask_padded[z_start:z_stop,
-                                              y_start:y_stop,
-                                              x_start:x_stop]
+                                  y_start:y_stop,
+                                  x_start:x_stop]
                     else:
                         trim_mk = mask_padded[z_start:z_stop,
-                                              y_start:y_stop,
-                                              x_start:x_stop,
-                                              :]
+                                  y_start:y_stop,
+                                  x_start:x_stop,
+                                  :]
                     tifffile.imwrite(
                         os.path.join(output + r'\mask', mask_name),
                         np.array(trim_mk, 'int8'))
