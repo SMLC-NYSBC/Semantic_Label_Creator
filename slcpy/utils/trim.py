@@ -1,5 +1,6 @@
 import math
-import os
+
+from os.path import join
 from typing import Optional
 
 import numpy as np
@@ -7,14 +8,14 @@ from tifffile import tifffile
 
 
 def trim_images(image: np.ndarray,
-                label_mask: np.ndarray,
                 trim_size_xy: int,
                 trim_size_z: int,
                 multi_layer: bool,
                 output: str,
-                image_counter: int):
+                image_counter: int,
+                label_mask: Optional[np.ndarray] = None):
     """
-    Class module trim date to specified sizes
+    MODULE FOR TRIMMING DATA TO SPECIFIED SIZES
 
     Args:
         image: corresponding image for the labels
@@ -61,19 +62,19 @@ def trim_images(image: np.ndarray,
             mask_name = str(idx) + r'_mask.tif'
 
             trim_img = image[nz_start:nz_end,
-                       ny_start:ny_end,
-                       nx_start:nx_end]
+                             ny_start:ny_end,
+                             nx_start:nx_end]
 
             if label_mask is not None:
                 if nc is None:
                     trim_mk = label_mask[nz_start:nz_end,
-                              ny_start:ny_end,
-                              nx_start:nx_end]
+                                         ny_start:ny_end,
+                                         nx_start:nx_end]
                 else:
                     trim_mk = label_mask[nz_start:nz_end,
-                              ny_start:ny_end,
-                              nx_start:nx_end,
-                              :]
+                                         ny_start:ny_end,
+                                         nx_start:nx_end,
+                                         :]
                 if np.all(trim_mk[:, :, :] == 0):
                     idx = idx
                 else:
@@ -81,12 +82,10 @@ def trim_images(image: np.ndarray,
                     if np.min(trim_img) < 0:
                         trim_img = trim_img + 128
 
-                    tifffile.imwrite(
-                        os.path.join(output + r'\mask', mask_name),
-                        np.array(trim_mk, 'int8'))
-                    tifffile.imwrite(
-                        os.path.join(output + r'\imgs', img_name),
-                        np.array(trim_img, 'int8'))
+                    tifffile.imwrite(join(output + r'\mask', mask_name),
+                                     np.array(trim_mk, 'int8'))
+                    tifffile.imwrite(join(output + r'\imgs', img_name),
+                                     np.array(trim_img, 'int8'))
                     idx += 1
 
     return idx
@@ -100,8 +99,8 @@ def trim_to_patches(image: np.ndarray,
                     label_mask: Optional[np.ndarray] = None,
                     stride=25):
     """
-    Function to trimmed image and mask with to specified size
-    with overlay to include the whole image.
+    FUNCTION TO TRIMMED IMAGE AND MASKS TO SPECIFIED SIZE
+
     Output images are saved as tiff with naming shame 1_1_1_25. Where
     number indicate grid position in xyz. Last number indicate stride.
 
@@ -128,17 +127,22 @@ def trim_to_patches(image: np.ndarray,
         nc = None
 
     if trim_size_xy is not None or trim_size_z is not None:
-        assert nx >= trim_size_xy, "trim_size_z should be equal or greater then X dimension!"
-        assert ny >= trim_size_xy, "trim_size_z should be equal or greater then Y dimension!"
+        assert nx >= trim_size_xy, \
+            "trim_size_z should be equal or greater then X dimension!"
+        assert ny >= trim_size_xy, \
+            "trim_size_z should be equal or greater then Y dimension!"
         if nz >= trim_size_z:
             trim_size_z = nz
     else:
-        assert stride is not None, "Trim sizes or stride has to be indicated!"
+        assert stride is not None, \
+            "Trim sizes or stride has to be indicated!"
         trim_size_xy = 64
         trim_size_z = 64
 
     # Calculate number of patches, patch sizes, and stride for xyz
-    x, y, z = math.ceil(nx / trim_size_xy), math.ceil(ny / trim_size_xy), math.ceil(nz / trim_size_z)
+    x, y, z = math.ceil(nx / trim_size_xy), \
+              math.ceil(ny / trim_size_xy), \
+              math.ceil(nz / trim_size_z)
 
     x_padding, y_padding, z_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx, \
                                       (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny, \
@@ -203,23 +207,25 @@ def trim_to_patches(image: np.ndarray,
                 mask_name = str("{}_{}_{}_{}_mask.tif".format(k, j, i, stride))
 
                 trim_img = image_padded[z_start:z_stop,
-                           y_start:y_stop,
-                           x_start:x_stop]
+                                        y_start:y_stop,
+                                        x_start:x_stop]
 
                 if label_mask is not None:
                     if nc is None:
                         trim_mk = mask_padded[z_start:z_stop,
-                                  y_start:y_stop,
-                                  x_start:x_stop]
+                                              y_start:y_stop,
+                                              x_start:x_stop]
                     else:
                         trim_mk = mask_padded[z_start:z_stop,
-                                  y_start:y_stop,
-                                  x_start:x_stop,
-                                  :]
-                    tifffile.imwrite(
-                        os.path.join(output + r'\mask', mask_name),
-                        np.array(trim_mk, 'int8'))
+                                              y_start:y_stop,
+                                              x_start:x_stop,
+                                              :]
+                    tifffile.imwrite(join(output + r'\mask', mask_name),
+                                     np.array(trim_mk, 'int8'))
 
-                tifffile.imwrite(
-                    os.path.join(output + r'\imgs', img_name),
-                    np.array(trim_img, 'int8'))
+                if label_mask is not None:
+                    tifffile.imwrite(join(output + r'\imgs', img_name),
+                                     np.array(trim_img, 'int8'))
+                else:
+                    tifffile.imwrite(join(output, img_name),
+                                     np.array(trim_img, 'int8'))

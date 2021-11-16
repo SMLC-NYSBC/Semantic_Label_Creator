@@ -1,5 +1,6 @@
-import os
-import shutil
+from os import mkdir, rename, listdir
+from os.path import isdir, join
+from shutil import rmtree
 from time import sleep
 
 import click
@@ -71,7 +72,7 @@ def main(dir_path,
          filter_empty_patches,
          stride):
     """
-    Main module for composing semantic label from given point cloud
+    MAIN MODULE FOR COMPOSING SEMANTIC LABEL FROM GIVEN POINT CLOUD
 
     Args:
         -dir / dir_path: Directory to the folder with image dataset.
@@ -92,35 +93,35 @@ def main(dir_path,
        -s / stride: stride for patch step size with overlay
     """
 
-    if os.path.isdir(output):
+    if isdir(output):
         try:
-            os.rename(output, dir_path + r'\output_old')
-            os.mkdir(output)
-            os.mkdir(output + r'\imgs')
-            os.mkdir(output + r'\mask')
+            rename(output, dir_path + r'\output_old')
+            mkdir(output)
+            mkdir(output + r'\imgs')
+            mkdir(output + r'\mask')
 
         except Exception:
             print("Folder for the output data already exist... "
                   "Data copied to output_old."
                   "Output folder will be overwrite...")
-            shutil.rmtree(dir_path + r'\output_old')
-            os.rename(output, dir_path + r'\output_old')
-            os.mkdir(output)
-            os.mkdir(output + r'\imgs')
-            os.mkdir(output + r'\mask')
+            rmtree(dir_path + r'\output_old')
+            rename(output, dir_path + r'\output_old')
+            mkdir(output)
+            mkdir(output + r'\imgs')
+            mkdir(output + r'\mask')
             pass
 
     else:
-        os.mkdir(output)
-        os.mkdir(output + r'\imgs')
-        os.mkdir(output + r'\mask')
+        mkdir(output)
+        mkdir(output + r'\imgs')
+        mkdir(output + r'\mask')
 
     image_counter = 0
     idx = 0
 
-    batch_iter = tqdm(os.listdir(dir_path),
+    batch_iter = tqdm(listdir(dir_path),
                       'Building Semantic patch images',
-                      total=len(os.listdir(dir_path)),
+                      total=len(listdir(dir_path)),
                       leave=False)
 
     for file in batch_iter:
@@ -132,7 +133,7 @@ def main(dir_path,
         if file.endswith('.tif'):
             if build_mask:
                 image, label_mask = slcpy_semantic(
-                    os.path.join(dir_path, file),
+                    join(dir_path, file),
                     mask=build_mask,
                     pixel_size=pixel_size,
                     circle_size=circle_size,
@@ -140,19 +141,19 @@ def main(dir_path,
                     trim_mask=pretrim_mask)
             else:
                 image = slcpy_semantic(
-                    os.path.join(dir_path, file),
+                    join(dir_path, file),
                     mask=build_mask)
                 label_mask = None
 
             if trim_size_xy is None:
                 tifffile.imwrite(
-                    os.path.join(output + r'\imgs', img_name),
+                    join(output + r'\imgs', img_name),
                     np.array(image, 'int8')
                 )
 
                 if build_mask:
                     tifffile.imwrite(
-                        os.path.join(output + r'\mask', mask_name),
+                        join(output + r'\mask', mask_name),
                         np.array(label_mask, 'int8')
                     )
             else:

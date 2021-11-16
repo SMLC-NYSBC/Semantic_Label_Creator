@@ -1,4 +1,5 @@
-import os
+from os import listdir
+from os.path import join
 from time import sleep
 
 import click
@@ -43,7 +44,7 @@ def main(dir_path: str,
          down_sampling: int,
          save: str):
     """
-    Main module for composing semantic label from given point cloud
+    MAIN MODULE FOR EXTRACTING POINT CLOUD FROM SEMANTIC LABEL
 
     Args:
         -dir / dir_path: Directory to the folder with image dataset.
@@ -53,27 +54,27 @@ def main(dir_path: str,
         -s / save: select type of saved data other numpy .npy or .csv
     """
 
-    for file in tqdm(os.listdir(dir_path)):
+    for file in tqdm(listdir(dir_path)):
         sleep(0.001)
 
         if file.endswith('.tif'):
             coords = slcpy_graph(
-                dir_path=os.path.join(dir_path, file),
+                dir_path=join(dir_path, file),
                 filter_img=filter,
                 clean_graph=clean_graph,
                 down_sampling=down_sampling
             )
             if save == "numpy":
-                np.save(os.path.join(output, file[:-4]),
+                np.save(join(output, file[:-4]),
                         coords)
             elif save == "csv":
-                np.savetxt(os.path.join(output, str(file[:-4] + ".csv")),
+                np.savetxt(join(output, str(file[:-4] + ".csv")),
                            coords,
                            delimiter=",")
             elif save == "all":
-                np.save(os.path.join(output, file[:-4]),
+                np.save(join(output, file[:-4]),
                         coords)
-                np.savetxt(os.path.join(output, str(file[:-4] + ".csv")),
+                np.savetxt(join(output, str(file[:-4] + ".csv")),
                            coords,
                            delimiter=",")
 

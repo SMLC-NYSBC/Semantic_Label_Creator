@@ -1,4 +1,4 @@
-import os
+from os.path import join
 
 import click
 import numpy as np
@@ -52,10 +52,8 @@ def main(dir_path: str,
     if binary:
         stitched_image[stitched_image > 0] = 1
 
-    tifffile.imwrite(
-        os.path.join(output, 'Stitched_Image.tif'),
-        np.array(stitched_image, 'int8')
-    )
+    tifffile.imwrite(join(output, 'Stitched_Image.tif'),
+                     np.array(stitched_image, 'int8'))
 
 
 if __name__ == '__main__':
