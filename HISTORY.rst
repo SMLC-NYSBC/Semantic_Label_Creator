@@ -1,6 +1,11 @@
 =======
 History
 =======
+0.3.2 (2021-11-19)
+-------------------
+* Bugfixes for version 0.3.1
+* Small update to adapt slcpy to spindletorch and ML packages
+
 0.3.1 (2021-10-31)
 -------------------
 * Maintained update

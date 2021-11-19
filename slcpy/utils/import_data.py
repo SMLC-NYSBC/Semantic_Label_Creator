@@ -1,6 +1,7 @@
 import itertools
 import math
 from os import path
+from typing import Optional
 
 import cv2
 import edt
@@ -56,17 +57,20 @@ class ImportDataFromAmira:
             word for word in self.spatial_graph if
             word.startswith('EDGE { int NumEdgePoints }')
         ])
-        segment_start = "".join((ch if ch in "0123456789" else " ") for ch in segments)
+        segment_start = "".join((ch if ch in "0123456789" else " ")
+                                for ch in segments)
         segment_start = [int(i) for i in segment_start.split()]
 
         # Find in the line directory that starts with @..
-        segment_start = int(self.spatial_graph.index("@" + str(segment_start[0]))) + 1
+        segment_start = int(self.spatial_graph.index(
+            "@" + str(segment_start[0]))) + 1
 
         # Find line define EDGE ... <- number indicate number of segments
         segments = str([
             word for word in self.spatial_graph if word.startswith('define EDGE')
         ])
-        segment_finish = "".join((ch if ch in "0123456789" else " ") for ch in segments)
+        segment_finish = "".join(
+            (ch if ch in "0123456789" else " ") for ch in segments)
         segment_finish = [int(i) for i in segment_finish.split()]
         segment_no = int(segment_finish[0])
         segment_finish = segment_start + int(segment_finish[0])
@@ -87,16 +91,19 @@ class ImportDataFromAmira:
             word for word in self.spatial_graph if word.startswith('POINT { float[3] EdgePointCoordinates }')
         ])
         # Find in the line directory that starts with @..
-        points_start = "".join((ch if ch in "0123456789" else " ") for ch in points)
+        points_start = "".join((ch if ch in "0123456789" else " ")
+                               for ch in points)
         points_start = [int(i) for i in points_start.split()]
         # Find line that start with the directory @.. and select last one
-        points_start = int(self.spatial_graph.index("@" + str(points_start[1]))) + 1
+        points_start = int(self.spatial_graph.index(
+            "@" + str(points_start[1]))) + 1
 
         # Find line define POINT ... <- number indicate number of points
         points = str([
             word for word in self.spatial_graph if word.startswith('define POINT')
         ])
-        points_finish = "".join((ch if ch in "0123456789" else " ") for ch in points)
+        points_finish = "".join(
+            (ch if ch in "0123456789" else " ") for ch in points)
         points_finish = [int(i) for i in points_finish.split()][0]
         points_no = points_finish
         points_finish = points_start + points_finish
@@ -157,11 +164,13 @@ class ImportDataFromAmira:
             try:
                 physical_size = str([
                     word for word in lines_in_et if
-                    word.startswith('        XLen') or word.startswith('        xLen')
+                    word.startswith('        XLen') or word.startswith(
+                        '        xLen')
                 ]).split(" ")
                 pixel_size = str([
                     word for word in lines_in_et if
-                    word.startswith('        Nx') or word.startswith('        nx')
+                    word.startswith('        Nx') or word.startswith(
+                        '        nx')
                 ]).split(" ")
 
                 physical_size = float(physical_size[9][:-3])
@@ -170,7 +179,8 @@ class ImportDataFromAmira:
                 return round(physical_size / pixel_size, 2)
 
             except:
-                raise Warning("{} file do not have embedded pixels size information").format(self.src_tiff[:-3] + "am")
+                raise Warning("{} file do not have embedded pixels size information").format(
+                    self.src_tiff[:-3] + "am")
         else:
             return self.pixel_size
 
@@ -180,9 +190,12 @@ class ImportDataFromAmira:
         transformation = self.__read_tiff_transformation()
         points_coord = self.__find_points()
 
-        points_coord[0:len(points_coord), 0] = points_coord[0:len(points_coord), 0] - transformation[0]
-        points_coord[0:len(points_coord), 1] = points_coord[0:len(points_coord), 1] - transformation[1]
-        points_coord[0:len(points_coord), 2] = points_coord[0:len(points_coord), 2] - transformation[2]
+        points_coord[0:len(points_coord), 0] = points_coord[0:len(
+            points_coord), 0] - transformation[0]
+        points_coord[0:len(points_coord), 1] = points_coord[0:len(
+            points_coord), 1] - transformation[1]
+        points_coord[0:len(points_coord), 2] = points_coord[0:len(
+            points_coord), 2] - transformation[2]
 
         return points_coord / pixel_size
 
@@ -216,8 +229,10 @@ class ImportSemanticMask:
                             threshold: int):
         combos = itertools.combinations(maxima, 2)
 
-        points_to_remove = [point2 for point1, point2 in combos if math.dist(point1, point2) <= threshold]
-        points_to_keep = [point for point in maxima if point not in points_to_remove]
+        points_to_remove = [point2 for point1, point2 in combos if math.dist(
+            point1, point2) <= threshold]
+        points_to_keep = [
+            point for point in maxima if point not in points_to_remove]
 
         return points_to_keep
 
@@ -229,33 +244,38 @@ class ImportSemanticMask:
         return closest_index[closest_index < threshold]
 
     def find_maximas(self,
-                     filter_small_object: int,
                      clean_close_point: bool,
-                     down_sampling: int):
-        """At each z position find point maximas and store their coordinates"""
+                     filter_small_object: Optional[int] = None,
+                     down_sampling: Optional[int] = None):
+        """At each z position find point maxims and store their coordinates"""
 
         x, y, z = [], [], []
-        batch_iter = tqdm(range(self.image.shape[0]),
-                          'Building a point cloud',
-                          total=self.image.shape[0],
-                          leave=False)
+        z_iter = tqdm(range(self.image.shape[0]),
+                      'Building a point cloud',
+                      total=self.image.shape[0],
+                      leave=False)
 
-        for i in batch_iter:
-            img_slice = self.image[i, :, :].astype('uint8')
+        for i in z_iter:
+            if filter_small_object is not None:
+                img_slice = self.image[i, :, :].astype('uint8')
+                """ Remove noise """
+                ret, thresh = cv2.threshold(
+                    img_slice, 0, 255, cv2.THRESH_BINARY)
+                kernel = np.ones((filter_small_object,
+                                  filter_small_object), np.uint8)
+                processed_image = cv2.morphologyEx(
+                    thresh, cv2.MORPH_OPEN, kernel)
+            else:
+                processed_image = self.image[i, :, :].astype('uint8')
 
-            # Remove noise
-            ret, thresh = cv2.threshold(img_slice, 0, 255, cv2.THRESH_BINARY)
-            kernel = np.ones((filter_small_object,
-                              filter_small_object), np.uint8)
-            denoise_image = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-
-            # Calculate distance matrix for labels
-            dist_matrix = edt.edt(denoise_image)
+            """ Calculate distance matrix for labels and output point cloud """
+            dist_matrix = edt.edt(processed_image)
             slice_maxima = peak_local_max(dist_matrix, labels=img_slice)
 
-            # Remove points that are closer then 2px from each other in 2D
+            """ Remove points that are closer then 2px from each other in 2D """
             if clean_close_point:
-                slice_maxima = self._remove_close_point(slice_maxima.tolist(), 2)
+                slice_maxima = self._remove_close_point(
+                    slice_maxima.tolist(), 2)
                 slice_maxima = np.array(slice_maxima)
 
             z = np.append(z, np.repeat(i, len(slice_maxima)))
@@ -264,8 +284,9 @@ class ImportSemanticMask:
         coordinates = np.array((z, y, x)).astype('uint16').T
 
         """ Down-sampling point cloud """
-        for sampling in range(down_sampling):
-            sorted_idx = np.lexsort(coordinates.T)
-            sorted_data = coordinates[sorted_idx, :]
-            coordinates = sorted_data[::2]
+        if down_sampling is not None:
+            for sampling in range(down_sampling):
+                sorted_idx = np.lexsort(coordinates.T)
+                sorted_data = coordinates[sorted_idx, :]
+                coordinates = sorted_data[::2]
         return coordinates

@@ -1,9 +1,10 @@
-setuptools~=57.1.0
-click==8.0.1
-scikit-image==0.18.2
-numpy>=1.20.0
-tifffile==2021.7.2
-tqdm==4.61.1
-imagecodecs==2021.6.8
+setuptools>=57.1.0
+click>=8.0.1
+scikit-image>=0.18.2
+numpy>=1.21.0
+tifffile>=2021.7.2
+tqdm>=4.61.1
+imagecodecs>=2021.6.8
 opencv-python>=4.5.0
 edt>=2.1.0
+scipy>=1.7.0
