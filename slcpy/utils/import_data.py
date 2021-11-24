@@ -162,16 +162,12 @@ class ImportDataFromAmira:
             lines_in_et = et.read(50000).split("\n")
 
             try:
-                physical_size = str([
-                    word for word in lines_in_et if
-                    word.startswith('        XLen') or word.startswith(
-                        '        xLen')
-                ]).split(" ")
-                pixel_size = str([
-                    word for word in lines_in_et if
-                    word.startswith('        Nx') or word.startswith(
-                        '        nx')
-                ]).split(" ")
+                physical_size = str([word for word in lines_in_et if
+                                     word.startswith('        XLen') or word.startswith(
+                                         '        xLen')]).split(" ")
+                pixel_size = str([word for word in lines_in_et if
+                                  word.startswith('        Nx') or word.startswith(
+                                      '        nx')]).split(" ")
 
                 physical_size = float(physical_size[9][:-3])
                 pixel_size = float(pixel_size[9][:-3])
@@ -179,8 +175,7 @@ class ImportDataFromAmira:
                 return round(physical_size / pixel_size, 2)
 
             except:
-                raise Warning("{} file do not have embedded pixels size information").format(
-                    self.src_tiff[:-3] + "am")
+                raise Warning("{} file do not have embedded pixels size information").format(self.src_tiff[:-3] + "am")
         else:
             return self.pixel_size
 

@@ -1,4 +1,4 @@
-from os import mkdir, rename, listdir
+from os import mkdir, rename, listdir, getcwd
 from os.path import isdir, join
 from shutil import rmtree
 from time import sleep
@@ -15,11 +15,11 @@ from slcpy.version import version
 
 @click.command()
 @click.option('-dir', '--dir_path',
-              default=os.getcwd() + r'\data',
+              default=getcwd() + r'\data',
               help='Directory to the folder which contains *.tif files.',
               show_default=True)
 @click.option('-o', '--output',
-              default=os.getcwd() + r'\data' + r'\output',
+              default=getcwd() + r'\data' + r'\output',
               help='Directory to the folder where results will be saved.',
               show_default=True)
 @click.option('-m', '--build_mask',
@@ -158,16 +158,21 @@ def main(dir_path,
                     )
             else:
 
-                if not filter_empty_patches:
-                    idx = trim_images(image, label_mask,
-                                      trim_size_xy, trim_size_z,
-                                      multi_classification,
-                                      output, idx)
+                if filter_empty_patches:
+                    idx = trim_images(image=image, label_mask=label_mask,
+                                      trim_size_xy=trim_size_xy,
+                                      trim_size_z=trim_size_z,
+                                      multi_layer=multi_classification,
+                                      output=output,
+                                      image_counter=idx)
                 else:
-                    idx = trim_to_patches(image, label_mask,
-                                          trim_size_xy, trim_size_z,
-                                          multi_classification,
-                                          output, stride)
+                    idx = trim_to_patches(image=image, label_mask=label_mask,
+                                          trim_size_xy=trim_size_xy,
+                                          trim_size_z=trim_size_z,
+                                          multi_layer=multi_classification,
+                                          image_counter=idx,
+                                          output=output,
+                                          stride=stride)
 
 
 if __name__ == '__main__':

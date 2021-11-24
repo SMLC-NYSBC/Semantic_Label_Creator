@@ -14,9 +14,12 @@ class StitchImages:
     Args:
         dir_path: Directory where all images are stored. Indicate one directory
             for each dataset, that has to be stitch.
+            mask:
+            prefix:
     """
 
     def __init__(self):
+        self.idx = 0  # Variable storing number of stitched images
         self.nx, self.ny, self.nz = 0, 0, 0  # Variable used to store xyz image dimension
         self.x, self.y, self.z = 0, 0, 0  # Variable to store number of patches in xyz
         self.stride = 0  # Variable to store step size
@@ -26,10 +29,11 @@ class StitchImages:
         # Extract information about images in dir_path
         file_list = [f for f in listdir(dir_path) if isfile(join(dir_path, f))]
 
-        self.x = max(list(map(int, [str.split(f[:-4], "_")[0] for f in file_list])))
-        self.y = max(list(map(int, [str.split(f[:-4], "_")[1] for f in file_list])))
-        self.z = max(list(map(int, [str.split(f[:-4], "_")[2] for f in file_list])))
-        self.stride = max(list(map(int, [str.split(f[:-4], "_")[3] for f in file_list])))
+        self.idx = max(list(map(int, [str.split(f[:-4], "_")[0] for f in file_list])))
+        self.x = max(list(map(int, [str.split(f[:-4], "_")[1] for f in file_list])))
+        self.y = max(list(map(int, [str.split(f[:-4], "_")[2] for f in file_list])))
+        self.z = max(list(map(int, [str.split(f[:-4], "_")[3] for f in file_list])))
+        self.stride = max(list(map(int, [str.split(f[:-4], "_")[4] for f in file_list])))
 
         return file_list
 
@@ -82,10 +86,15 @@ class StitchImages:
 
                     if prefix is not None:
                         img_dir = str(join(dir_path,
-                                           "{}_{}_{}_{}_{}.tif".format(k, j, i, self.stride, prefix)))
+                                           "{}_{}_{}_{}_{}_{}.tif".format(self.idx,
+                                                                          k, j, i,
+                                                                          self.stride,
+                                                                          prefix)))
                     else:
                         img_dir = str(join(dir_path,
-                                           "{}_{}_{}_{}.tif".format(k, j, i, self.stride)))
+                                           "{}_{}_{}_{}_{}.tif".format(self.idx,
+                                                                       k, j, i,
+                                                                       self.stride)))
 
                     img = tifffile.imread(img_dir)
                     assert img.shape == (self.nz, self.ny, self.nx)

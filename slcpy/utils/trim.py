@@ -96,6 +96,7 @@ def trim_to_patches(image: np.ndarray,
                     trim_size_z: int,
                     multi_layer: bool,
                     output: str,
+                    image_counter: int,
                     label_mask: Optional[np.ndarray] = None,
                     stride=25):
     """
@@ -111,11 +112,13 @@ def trim_to_patches(image: np.ndarray,
         trim_size_z: Size of trimming in z dimension
         multi_layer: Single, or unique value for each lines
         output: Name of the output directory for saving
+        image_counter:
         stride: Trimming step size
 
     Returns:
         Saved trimmed images as tiff in specified folder
     """
+    idx = image_counter
 
     if multi_layer:
         nz, ny, nx, nc = label_mask.shape
@@ -203,8 +206,8 @@ def trim_to_patches(image: np.ndarray,
                 x_start = x_start + trim_size_xy - stride
                 x_stop = x_start + trim_size_xy
 
-                img_name = str("{}_{}_{}_{}.tif".format(k, j, i, stride))
-                mask_name = str("{}_{}_{}_{}_mask.tif".format(k, j, i, stride))
+                img_name = str("{}_{}_{}_{}_{}.tif".format(idx, k, j, i, stride))
+                mask_name = str("{}_{}_{}_{}_{}_mask.tif".format(idx, k, j, i, stride))
 
                 trim_img = image_padded[z_start:z_stop,
                                         y_start:y_stop,
@@ -229,3 +232,5 @@ def trim_to_patches(image: np.ndarray,
                 else:
                     tifffile.imwrite(join(output, img_name),
                                      np.array(trim_img, 'int8'))
+    idx += 1
+    return idx
