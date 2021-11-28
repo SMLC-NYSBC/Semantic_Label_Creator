@@ -239,50 +239,48 @@ class ImportSemanticMask:
         return closest_index[closest_index < threshold]
 
     def find_maximas(self,
-                     clean_close_point: bool,
+                     clean_close_point: int,
                      filter_small_object: Optional[int] = None,
                      down_sampling: Optional[int] = None):
         """At each z position find point maxims and store their coordinates"""
-
         x, y, z = [], [], []
         z_iter = tqdm(range(self.image.shape[0]),
                       'Building a point cloud',
                       total=self.image.shape[0],
                       leave=False)
-
+        denoise_img = np.zeros(self.image.shape, dtype='int8')
+        
         for i in z_iter:
-            img_slice = self.image[i, :, :].astype('uint8')
+            img_slice = self.image[i, :].astype('int16')
             
             """ Remove noise and calculate distance matrix """
             if filter_small_object is not None:
-                _, thresh = cv2.threshold(
-                    img_slice, 0, 255, cv2.THRESH_BINARY)
-                kernel = np.ones((filter_small_object,
-                                  filter_small_object), np.uint8)
-                processed_image = cv2.morphologyEx(
-                    thresh, cv2.MORPH_OPEN, kernel)
+                _, thresh = cv2.threshold(img_slice, 0, 255, cv2.THRESH_BINARY)
+                kernel = np.ones((filter_small_object, filter_small_object), 
+                                 np.uint8)
+                img_slice = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
                 
-                dist_matrix = edt.edt(processed_image)
+                dist_matrix = edt.edt(img_slice)
             else:
                 dist_matrix = edt.edt(img_slice)
 
-            slice_maxima = peak_local_max(dist_matrix, labels=img_slice)
-
-            """ Remove points that are closer then 2px from each other in 2D """
-            if clean_close_point:
-                slice_maxima = self._remove_close_point(
-                    slice_maxima.tolist(), 2)
-                slice_maxima = np.array(slice_maxima)
+            slice_maxima = peak_local_max(dist_matrix, 
+                                          labels=img_slice,
+                                          min_distance=clean_close_point)
 
             z = np.append(z, np.repeat(i, len(slice_maxima)))
             y = np.append(y, slice_maxima[:, 0])
             x = np.append(x, slice_maxima[:, 1])
+
+            denoise_img[i, :] = img_slice
+            
         coordinates = np.array((z, y, x)).astype('uint16').T
 
-        """ Down-sampling point cloud """
+        """ Down-sampling point cloud by removing closest point"""
         if down_sampling is not None:
             for sampling in range(down_sampling):
                 sorted_idx = np.lexsort(coordinates.T)
                 sorted_data = coordinates[sorted_idx, :]
                 coordinates = sorted_data[::2]
-        return coordinates
+                
+        return denoise_img, coordinates

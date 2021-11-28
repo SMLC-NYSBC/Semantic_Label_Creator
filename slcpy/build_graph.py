@@ -4,6 +4,7 @@ from time import sleep
 
 import click
 import numpy as np
+from tifffile import tifffile
 from tqdm import tqdm
 
 from slcpy.main import slcpy_graph
@@ -58,7 +59,7 @@ def main(dir_path: str,
         sleep(0.001)
 
         if file.endswith('.tif'):
-            coords = slcpy_graph(
+            img, coords = slcpy_graph(
                 dir_path=join(dir_path, file),
                 filter_img=filter,
                 clean_graph=clean_graph,
@@ -72,6 +73,8 @@ def main(dir_path: str,
                            coords,
                            delimiter=",")
             elif save == "all":
+                tifffile.imwrite(join(output, file[:-4] + '_pred.tif'),
+                                 np.array(img, 'int8'))
                 np.save(join(output, file[:-4]),
                         coords)
                 np.savetxt(join(output, str(file[:-4] + ".csv")),

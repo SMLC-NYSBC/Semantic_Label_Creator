@@ -136,7 +136,7 @@ def slcpy_stitch(dir_path: str,
 
 def slcpy_graph(dir_path: str,
                 filter_img: int,
-                clean_graph: bool,
+                clean_graph: int,
                 down_sampling: int):
     """
     MODULE TO BUILD POINT CLOUD FROM 3D .tiff FILES
@@ -144,12 +144,13 @@ def slcpy_graph(dir_path: str,
     Args:
         dir_path: Path direction of the input file *.tif with semantic masks.
         filter_img: Filter size for cleaning lonely pixels.
-        clean_graph: If True a output graph is cleaned.
+        clean_graph: Min number of pixels between each coord can be picked
         down_sampling: Number of downsample iterations.
     """
 
     img = ImportSemanticMask(src_tiff=dir_path)
 
-    return img.find_maximas(filter_small_object=filter_img,
+    denois_image, coord = img.find_maximas(filter_small_object=filter_img,
                             clean_close_point=clean_graph,
                             down_sampling=down_sampling)
+    return denois_image, coord
