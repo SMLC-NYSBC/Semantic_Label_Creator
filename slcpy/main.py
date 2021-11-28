@@ -113,7 +113,8 @@ def slcpy_semantic(dir_path: str,
 
 def slcpy_stitch(dir_path: str,
                  mask: bool,
-                 prefix=None):
+                 prefix=None,
+                 dtype='int8'):
     """
     MODULE TO STITCH SEGMENTED IMAGES
 
@@ -121,12 +122,14 @@ def slcpy_stitch(dir_path: str,
         dir_path: Path direction of the input file *.tif with semantic masks.
         mask: If True images are treated as Semantic mask not image.
         prefix: Prefix name for the Images.
+        dtype: Type of output image.
     """
 
     stitcher = StitchImages()
     stitch_img = stitcher(dir_path=dir_path,
                           mask=mask,
-                          prefix=prefix)
+                          prefix=prefix,
+                          dtype=dtype)
 
     return stitch_img
 
@@ -136,7 +139,7 @@ def slcpy_graph(dir_path: str,
                 clean_graph: bool,
                 down_sampling: int):
     """
-    MODULE TO BUILD POINT CLOUND FROM 3D .tiff FILES
+    MODULE TO BUILD POINT CLOUD FROM 3D .tiff FILES
 
     Args:
         dir_path: Path direction of the input file *.tif with semantic masks.

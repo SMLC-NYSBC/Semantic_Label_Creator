@@ -44,7 +44,8 @@ class StitchImages:
     def __call__(self,
                  dir_path: str,
                  mask: bool,
-                 prefix=None):
+                 prefix=None,
+                 dtype='int8'):
 
         file_list = self._find_xyz(dir_path)
         self._calculate_dim(tifffile.imread(join(dir_path, file_list[0])))
@@ -52,7 +53,7 @@ class StitchImages:
         x_dim = self.nx + ((self.nx - self.stride) * self.x)
         y_dim = self.ny + ((self.ny - self.stride) * self.y)
         z_dim = self.nz + ((self.nz - self.stride) * self.z)
-        stitched_image = np.zeros((z_dim, y_dim, x_dim), dtype="int8")
+        stitched_image = np.zeros((z_dim, y_dim, x_dim), dtype=dtype)
 
         z_start, z_stop = 0 - (self.nz - self.stride), 0
         img_counter = 0

@@ -29,26 +29,33 @@ from slcpy.version import version
               default=None,
               help='Output binary mask.',
               show_default=True)
+@click.option('-dt', '--dtype',
+              default='int8',
+              help='Data type of output image.',
+              show_default=True)
 @click.version_option(version=version)
 def main(dir_path: str,
          output: str,
          mask: bool,
          prefix: str,
-         binary: bool):
+         binary: bool,
+         dtype: str):
     """
     Main module for stitch individual images into montaged image
 
     Args:
         -dir / dir_path: Directory to the folder with image dataset.
         -o / output: Output directory for saving transformed files.
-        -m / mask: Indicate if stiched images are mask or images.
+        -m / mask: Indicate if stitched images are mask or images.
         -pf / prefix: if not None, indicate additional file prefix.
         -b / binary: If True transform date to binary format.
+        -dt /dtype: Data format type.
     """
 
     stitched_image = slcpy_stitch(dir_path,
                                   mask=mask,
-                                  prefix=prefix)
+                                  prefix=prefix,
+                                  dtype=dtype)
     if binary:
         stitched_image[stitched_image > 0] = 1
 

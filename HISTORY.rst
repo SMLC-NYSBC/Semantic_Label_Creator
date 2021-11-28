@@ -1,6 +1,12 @@
 =======
 History
 =======
+
+0.3.3 (2021-11-28)
+-------------------
+* Added check for spindletorch to select dtype of output from
+  slcpy_stitch
+  
 0.3.2 (2021-11-19)
 -------------------
 * Bugfixes for version 0.3.1

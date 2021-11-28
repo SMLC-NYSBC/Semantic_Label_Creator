@@ -251,20 +251,21 @@ class ImportSemanticMask:
                       leave=False)
 
         for i in z_iter:
+            img_slice = self.image[i, :, :].astype('uint8')
+            
+            """ Remove noise and calculate distance matrix """
             if filter_small_object is not None:
-                img_slice = self.image[i, :, :].astype('uint8')
-                """ Remove noise """
-                ret, thresh = cv2.threshold(
+                _, thresh = cv2.threshold(
                     img_slice, 0, 255, cv2.THRESH_BINARY)
                 kernel = np.ones((filter_small_object,
                                   filter_small_object), np.uint8)
                 processed_image = cv2.morphologyEx(
                     thresh, cv2.MORPH_OPEN, kernel)
+                
+                dist_matrix = edt.edt(processed_image)
             else:
-                processed_image = self.image[i, :, :].astype('uint8')
+                dist_matrix = edt.edt(img_slice)
 
-            """ Calculate distance matrix for labels and output point cloud """
-            dist_matrix = edt.edt(processed_image)
             slice_maxima = peak_local_max(dist_matrix, labels=img_slice)
 
             """ Remove points that are closer then 2px from each other in 2D """
