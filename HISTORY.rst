@@ -4,6 +4,11 @@ History
 
 0.3.3 (2021-11-28)
 -------------------
+* Quick changes for 0.3.3 for build graph tool.
+  * Added image output after denoising as an option
+
+0.3.3 (2021-11-28)
+-------------------
 * Added check for spindletorch to select dtype of output from
   slcpy_stitch
   

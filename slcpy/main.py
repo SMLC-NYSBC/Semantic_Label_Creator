@@ -151,6 +151,6 @@ def slcpy_graph(dir_path: str,
     img = ImportSemanticMask(src_tiff=dir_path)
 
     denois_image, coord = img.find_maximas(filter_small_object=filter_img,
-                            clean_close_point=clean_graph,
-                            down_sampling=down_sampling)
+                                           clean_close_point=clean_graph,
+                                           down_sampling=down_sampling)
     return denois_image, coord

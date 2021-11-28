@@ -97,11 +97,17 @@ or with terminal to build semantic label::
  bool   [-t]   Specified if the input image has to be trim to fit labels.
     [-default] True
  int    [-xy]  Define size in pixels of output images.
-    [-default] None [-type] int
+    [-default] 64
+ int    [-z]  Define size in pixels of output images.
+    [-default] 64
+ bool   [-f]  If True only images containing any data are saved.
+    [-default] True
+ int    [-s]  Overlay size used for trimming images.
+    [-default] 25
 
 with terminal to stitch images::
 
-    slcpy_stitch -dir C:/... -o C:/.../output -m True -pf maks -b True
+    slcpy_stitch -dir C:/... -o C:/.../output -m True -pf mask -b True
  string [-dir] Directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'
  string [-o]   Output directory to the folder where all of converted filed are stored.
@@ -112,18 +118,22 @@ with terminal to stitch images::
     [-default] None
  bool   [-b]   If True output stitched image as binary mask.
     [-default] True
+ string [-dt]   Output numpy data type.
+    [-default] int8
 
 with terminal to build point cloud from image::
 
-    slcpy_graph -dir C:/... -o C:/.../output -s cvs
+    slcpy_graph -dir C:/... -o C:/.../output -f 6 -c 3 -s cvs 
  string [-dir] Directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'
  string [-o]   Output directory to the folder where all of converted filed are stored.
     [-default] os.getcwd() + r'\data' + r'\output'
- string [-c]   Clean graph from neighborhood points.
-    [-default] True
- string [-d]   Down-sample point cloud by the factor of.
-    [-default] 2
+ int    [-f]   Filter size matrix for denoising.
+    [-default] 6
+ int    [-c]   Clean graph from neighborhood points.
+    [-default] 3
+ int    [-d]   Down-sample point cloud by the factor of.
+    [-default] None
  string [-s]   Define format of output point cloud.
-    [-default] csv
+    [-default] all
     [-option] all, csv, numpy
