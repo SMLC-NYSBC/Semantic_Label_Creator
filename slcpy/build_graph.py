@@ -1,4 +1,4 @@
-from os import listdir
+from os import listdir, getcwd
 from os.path import join
 from time import sleep
 
@@ -12,11 +12,11 @@ from slcpy.version import version
 
 @click.command()
 @click.option('-dir', '--dir_path',
-              default=os.getcwd() + r'\data',
+              default=getcwd() + r'\data',
               help='Directory to the folder which contains *.tif files.',
               show_default=True)
 @click.option('-o', '--output',
-              default=os.getcwd() + r'\data' + r'\output',
+              default=getcwd() + r'\data' + r'\output',
               help='Directory to the folder where results will be saved.',
               show_default=True)
 @click.option('-f', '--filter',
