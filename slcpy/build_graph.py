@@ -27,11 +27,11 @@ from slcpy.version import version
               help='Filter size matrix for denoising.',
               show_default=True)
 @click.option('-c', '--clean_graph',
-              default=3,
+              default=10,
               help='Clean graph from neighborhood points.',
               show_default=True)
 @click.option('-d', '--down_sampling',
-              default=None,
+              default=0,
               help='Down-sample point cloud by the factor of...',
               show_default=True)
 @click.option('-s', '--save',
@@ -71,7 +71,7 @@ def main(dir_path: str,
                            coords,
                            delimiter=",")
             elif save == "all":
-                tifffile.imwrite(join(output, file[:-4] + '_pred.tif'),
+                tifffile.imwrite(join(output, file[:-4] + '_denoise.tif'),
                                  np.array(img, 'int8'))
                 np.save(join(output, file[:-4]),
                         coords)

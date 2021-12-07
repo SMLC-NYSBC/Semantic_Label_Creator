@@ -1,12 +1,9 @@
-import itertools
-import math
 from os import path
 from typing import Optional
 
 import cv2
 import edt
 import numpy as np
-from scipy.spatial import distance
 from skimage import io
 from skimage.feature import peak_local_max
 from tqdm import tqdm
@@ -175,7 +172,8 @@ class ImportDataFromAmira:
                 return round(physical_size / pixel_size, 2)
 
             except:
-                raise Warning("{} file do not have embedded pixels size information").format(self.src_tiff[:-3] + "am")
+                raise Warning("{} file do not have embedded pixels size information").format(
+                    self.src_tiff[:-3] + "am")
         else:
             return self.pixel_size
 
@@ -220,23 +218,50 @@ class ImportSemanticMask:
         return self.image
 
     def _remove_close_point(self,
-                            maxima: list,
-                            threshold: int):
-        combos = itertools.combinations(maxima, 2)
+                            coordinates: np.ndarray,
+                            voxal_z: int,
+                            voxal_xy: int):
+        """
+        Filtering mechanism for point clouds.
+         - For each point find point with the same position but in pre-define
+            z frame. If points are found, remove all and replace with center point.
+         - Remove points that don't have any neighbors in 3D by pre-define dist.
 
-        points_to_remove = [point2 for point1, point2 in combos if math.dist(
-            point1, point2) <= threshold]
-        points_to_keep = [
-            point for point in maxima if point not in points_to_remove]
+        Args:
+            point_cloud: [description]
+            dist_lonely_point: [description]
+        """
+        filter_coord = coordinates
+        z_iter = tqdm(range(len(coordinates)),
+                      'Building point cloud..',
+                      total=len(coordinates),
+                      leave=False)
 
-        return points_to_keep
+        for i in z_iter:
+            z, y, x = coordinates[i, :]
 
-    def _closest_node(self,
-                      node,
-                      nodes,
-                      threshold):
-        closest_index = distance.cdist([node], nodes)
-        return closest_index[closest_index < threshold]
+            tmp_coord = coordinates[coordinates[:, 0] > (z - voxal_z)]
+            tmp_coord = tmp_coord[tmp_coord[:, 0] < (z + voxal_z)]
+            tmp_coord = tmp_coord[tmp_coord[:, 1] > (y - voxal_xy)]
+            tmp_coord = tmp_coord[tmp_coord[:, 1] < (y + voxal_xy)]
+            tmp_coord = tmp_coord[tmp_coord[:, 2] > (x - voxal_xy)]
+            tmp_coord = tmp_coord[tmp_coord[:, 2] < (x + voxal_xy)]
+
+            if len(tmp_coord) > 1:
+                for j in range(len(tmp_coord)):
+                    tmp = (filter_coord == tmp_coord[j, :])
+                    del_idx = np.where(
+                        np.einsum('i,i,i->i', tmp[:, 0], tmp[:, 1], tmp[:, 2]))
+                    filter_coord = np.delete(filter_coord, del_idx[0], axis=0)
+
+                z = round(np.mean(tmp_coord[:, 0]), 0).astype('int16')
+                y = round(np.mean(tmp_coord[:, 1]), 0).astype('int16')
+                x = round(np.mean(tmp_coord[:, 2]), 0).astype('int16')
+                tmp_coord = np.array((z, y, x)).astype('uint16').T
+
+                filter_coord = np.vstack((tmp_coord, filter_coord))
+
+        return filter_coord
 
     def find_maximas(self,
                      clean_close_point: int,
@@ -244,43 +269,52 @@ class ImportSemanticMask:
                      down_sampling: Optional[int] = None):
         """At each z position find point maxims and store their coordinates"""
         x, y, z = [], [], []
-        z_iter = tqdm(range(self.image.shape[0]),
-                      'Building a point cloud',
-                      total=self.image.shape[0],
+
+        if filter_small_object is None:
+            denoise_img = np.zeros(self.image.shape, dtype='int16')
+
+            z_iter = tqdm(range(self.image.shape[0]),
+                          'Removing small object from prediction...',
+                          total=self.image.shape[0],
+                          leave=False)
+            for i in z_iter:
+                slice = self.image[i, :].astype('int16')
+                _, thresh = cv2.threshold(slice, 0, 255, cv2.THRESH_BINARY)
+                kernel = np.ones((7, 7),
+                                 np.int16)
+                denoise_img[i, :] = cv2.morphologyEx(
+                    thresh, cv2.MORPH_OPEN, kernel)
+
+            denoise_img = abs(denoise_img.astype('int8'))
+        else:
+            denoise_img = self.image
+
+        """ Compute euclidean transformation for labels and build point cloud """
+        distance_matrix = edt.edt(denoise_img, parallel=0)
+
+        x, y, z = [], [], []
+        z_iter = tqdm(range(denoise_img.shape[0]),
+                      'Building point cloud..',
+                      total=denoise_img.shape[0],
                       leave=False)
-        denoise_img = np.zeros(self.image.shape, dtype='int8')
-        
+
         for i in z_iter:
-            img_slice = self.image[i, :].astype('int16')
-            
-            """ Remove noise and calculate distance matrix """
-            if filter_small_object is not None:
-                _, thresh = cv2.threshold(img_slice, 0, 255, cv2.THRESH_BINARY)
-                kernel = np.ones((filter_small_object, filter_small_object), 
-                                 np.uint8)
-                img_slice = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-                
-                dist_matrix = edt.edt(img_slice)
-            else:
-                dist_matrix = edt.edt(img_slice)
+            img_slice = denoise_img[i, :]
+            dm_slice = distance_matrix[i, :]
+            picked_maxima = peak_local_max(dm_slice,
+                                           labels=img_slice,
+                                           min_distance=clean_close_point)
+            z = np.append(z, np.repeat(i, len(picked_maxima)))
+            y = np.append(y, picked_maxima[:, 0])
+            x = np.append(x, picked_maxima[:, 1])
 
-            slice_maxima = peak_local_max(dist_matrix, 
-                                          labels=img_slice,
-                                          min_distance=clean_close_point)
-
-            z = np.append(z, np.repeat(i, len(slice_maxima)))
-            y = np.append(y, slice_maxima[:, 0])
-            x = np.append(x, slice_maxima[:, 1])
-
-            denoise_img[i, :] = img_slice
-            
         coordinates = np.array((z, y, x)).astype('uint16').T
 
-        """ Down-sampling point cloud by removing closest point"""
+        """ Down-sampling point cloud by removing closest point """
+
         if down_sampling is not None:
-            for sampling in range(down_sampling):
-                sorted_idx = np.lexsort(coordinates.T)
-                sorted_data = coordinates[sorted_idx, :]
-                coordinates = sorted_data[::2]
-                
+            coordinates = self._remove_close_point(coordinates=coordinates,
+                                                   voxal_z=5,
+                                                   voxal_xy=2)
+
         return denoise_img, coordinates
