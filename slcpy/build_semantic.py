@@ -125,7 +125,6 @@ def main(dir_path,
                       leave=False)
 
     for file in batch_iter:
-        sleep(0.001)
         img_name = str(image_counter) + r'.tif'
         mask_name = str(image_counter) + r'_mask.tif'
         image_counter += 1
@@ -157,7 +156,6 @@ def main(dir_path,
                         np.array(label_mask, 'int8')
                     )
             else:
-
                 if filter_empty_patches:
                     idx = trim_images(image=image, label_mask=label_mask,
                                       trim_size_xy=trim_size_xy,

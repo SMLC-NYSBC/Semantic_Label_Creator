@@ -28,7 +28,7 @@ class ImportDataFromAmira:
         self.pixel_size = pixel_size
 
         try:
-            self.image = io.imread(self.src_tiff)
+            self.image = io.imread(self.src_tiff)  # Image file [Z x Y x X]
         except RuntimeWarning:
             raise Warning("Directory or input .tiff file is not correct...")
 
@@ -158,10 +158,11 @@ class ImportDataFromAmira:
 
             lines_in_et = et.read(50000).split("\n")
 
-            try:
-                physical_size = str([word for word in lines_in_et if
-                                     word.startswith('        XLen') or word.startswith(
-                                         '        xLen')]).split(" ")
+            physical_size = str([word for word in lines_in_et if
+                                 word.startswith('        XLen') or word.startswith(
+                                     '        xLen')]).split(" ")
+
+            if 'XLen' in physical_size or 'xLen' in physical_size:
                 pixel_size = str([word for word in lines_in_et if
                                   word.startswith('        Nx') or word.startswith(
                                       '        nx')]).split(" ")
@@ -170,10 +171,19 @@ class ImportDataFromAmira:
                 pixel_size = float(pixel_size[9][:-3])
 
                 return round(physical_size / pixel_size, 2)
+            else:
+                transformation_list = str([
+                    word for word in lines_in_et if word.startswith('    BoundingBox')
+                ]).split(" ")
 
-            except:
-                raise Warning("{} file do not have embedded pixels size information").format(
-                    self.src_tiff[:-3] + "am")
+                physical_size = float(transformation_list[6])
+                pixel_size = float(self.image.shape[2])
+
+                size = round(physical_size / pixel_size, 2)
+                dim = np.array((23.2, 25.72))
+                idx_size = (dim - size).argmin()
+
+                return dim[idx_size]
         else:
             return self.pixel_size
 

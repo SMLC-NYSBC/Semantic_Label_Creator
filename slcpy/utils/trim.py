@@ -82,9 +82,9 @@ def trim_images(image: np.ndarray,
                     if np.min(trim_img) < 0:
                         trim_img = trim_img + 128
 
-                    tifffile.imwrite(join(output + r'\mask', mask_name),
+                    tifffile.imwrite(join(output, 'mask', mask_name),
                                      np.array(trim_mk, 'int8'))
-                    tifffile.imwrite(join(output + r'\imgs', img_name),
+                    tifffile.imwrite(join(output, 'imgs', img_name),
                                      np.array(trim_img, 'int8'))
                     idx += 1
 
