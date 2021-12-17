@@ -95,26 +95,26 @@ def main(dir_path,
 
     if isdir(output):
         try:
-            rename(output, dir_path + r'\output_old')
+            rename(output, output + '_old')
             mkdir(output)
-            mkdir(output + r'\imgs')
-            mkdir(output + r'\mask')
+            mkdir(join(output, 'imgs'))
+            mkdir(join(output, 'mask'))
 
         except Exception:
             print("Folder for the output data already exist... "
                   "Data copied to output_old."
                   "Output folder will be overwrite...")
-            rmtree(dir_path + r'\output_old')
-            rename(output, dir_path + r'\output_old')
+            rmtree(join(dir_path, 'output_old'))
+            rename(output, output + '_old')
             mkdir(output)
-            mkdir(output + r'\imgs')
-            mkdir(output + r'\mask')
+            mkdir(join(output, 'imgs'))
+            mkdir(join(output, 'mask'))
             pass
 
     else:
         mkdir(output)
-        mkdir(output + r'\imgs')
-        mkdir(output + r'\mask')
+        mkdir(join(output, 'imgs'))
+        mkdir(join(output, 'mask'))
 
     image_counter = 0
     idx = 0
@@ -146,13 +146,13 @@ def main(dir_path,
 
             if trim_size_xy is None:
                 tifffile.imwrite(
-                    join(output + r'\imgs', img_name),
+                    join(output + 'imgs', img_name),
                     np.array(image, 'int8')
                 )
 
                 if build_mask:
                     tifffile.imwrite(
-                        join(output + r'\mask', mask_name),
+                        join(output + 'mask', mask_name),
                         np.array(label_mask, 'int8')
                     )
             else:

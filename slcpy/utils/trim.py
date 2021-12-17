@@ -46,9 +46,11 @@ def trim_images(image: np.ndarray,
     if nz_start < 0:
         nz_start = 0
         nz_end = nz
-        print("Selected trim size for image is too small.",
-              "Input image has {} slices".format(nz),
-              "but required {}".format(trim_size_z))
+
+    if (nz_end - nz_start) != trim_size_z:
+        padding = True
+    else:
+        padding = False
 
     for i in range(1, y_axis + 1):
         ny_start += trim_size_xy
@@ -60,33 +62,73 @@ def trim_images(image: np.ndarray,
             nx_end += trim_size_xy
             img_name = str(idx) + r'.tif'
             mask_name = str(idx) + r'_mask.tif'
+            trim_img = np.zeros((trim_size_z,
+                                 trim_size_xy,
+                                 trim_size_xy))
 
-            trim_img = image[nz_start:nz_end,
-                             ny_start:ny_end,
-                             nx_start:nx_end]
+            if not padding:
+                trim_img = image[nz_start:nz_end,
+                                 ny_start:ny_end,
+                                 nx_start:nx_end]
+            else:
+                trim_img[0:(nz_end - nz_start),
+                         0:(ny_end - ny_start),
+                         0:(nx_end - nx_start)] = image[nz_start:nz_end,
+                                                        ny_start:ny_end,
+                                                        nx_start:nx_end]
 
             if label_mask is not None:
                 if nc is None:
-                    trim_mk = label_mask[nz_start:nz_end,
-                                         ny_start:ny_end,
-                                         nx_start:nx_end]
+                    trim_mk = np.zeros((trim_size_z,
+                                        trim_size_xy,
+                                        trim_size_xy))
+
+                    if not padding:
+                        trim_mk = label_mask[nz_start:nz_end,
+                                             ny_start:ny_end,
+                                             nx_start:nx_end]
+                    else:
+                        trim_mk[0:(nz_end - nz_start),
+                                0:(ny_end - ny_start),
+                                0:(nx_end - nx_start)] = label_mask[nz_start:nz_end,
+                                                                    ny_start:ny_end,
+                                                                    nx_start:nx_end]
                 else:
+                    trim_mk = np.zeros((trim_size_z,
+                                        trim_size_xy,
+                                        trim_size_xy,
+                                        nc))
+                    if not padding:
+                        trim_mk = label_mask[nz_start:nz_end,
+                                             ny_start:ny_end,
+                                             nx_start:nx_end,
+                                             :]
+                    else:
+                        trim_mk[0:(nz_end - nz_start),
+                                0:(ny_end - ny_start),
+                                0:(nx_end - nx_start),
+                                :] = label_mask[nz_start:nz_end,
+                                                ny_start:ny_end,
+                                                nx_start:nx_end,
+                                                :]
+
                     trim_mk = label_mask[nz_start:nz_end,
                                          ny_start:ny_end,
                                          nx_start:nx_end,
                                          :]
-                if np.all(trim_mk[:, :, :] == 0):
-                    idx = idx
-                else:
-                    # Hard transform between int8 and uint8
-                    if np.min(trim_img) < 0:
-                        trim_img = trim_img + 128
 
-                    tifffile.imwrite(join(output, 'mask', mask_name),
-                                     np.array(trim_mk, 'int8'))
-                    tifffile.imwrite(join(output, 'imgs', img_name),
-                                     np.array(trim_img, 'int8'))
-                    idx += 1
+            if np.all(trim_mk[:, :, :] == 0):
+                idx = idx
+            else:
+                # Hard transform between int8 and uint8
+                if np.min(trim_img) < 0:
+                    trim_img = trim_img + 128
+
+                tifffile.imwrite(join(output, 'mask', mask_name),
+                                 np.array(trim_mk, 'int8'))
+                tifffile.imwrite(join(output, 'imgs', img_name),
+                                 np.array(trim_img, 'int8'))
+                idx += 1
 
     return idx
 
@@ -144,12 +186,13 @@ def trim_to_patches(image: np.ndarray,
 
     # Calculate number of patches, patch sizes, and stride for xyz
     x, y, z = math.ceil(nx / trim_size_xy), \
-              math.ceil(ny / trim_size_xy), \
-              math.ceil(nz / trim_size_z)
+        math.ceil(ny / trim_size_xy), \
+        math.ceil(nz / trim_size_z)
 
     x_padding, y_padding, z_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx, \
                                       (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny, \
-                                      (trim_size_z + ((trim_size_z - stride) * (z - 1))) - nz
+                                      (trim_size_z +
+                                       ((trim_size_z - stride) * (z - 1))) - nz
 
     # Adapt number of patches for trimming
     if trim_size_xy is not None or trim_size_z is not None:
@@ -167,8 +210,10 @@ def trim_to_patches(image: np.ndarray,
     else:
         while x_padding <= 0 or y_padding <= 0:
             trim_size_xy += 1
-            x_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx
-            y_padding = (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny
+            x_padding = (trim_size_xy +
+                         ((trim_size_xy - stride) * (x - 1))) - nx
+            y_padding = (trim_size_xy +
+                         ((trim_size_xy - stride) * (y - 1))) - ny
 
         while z_padding < 0:
             trim_size_z += 1
@@ -186,7 +231,8 @@ def trim_to_patches(image: np.ndarray,
                                  mode='constant')
         else:
             mask_padded = np.pad(label_mask,
-                                 [(0, z_padding), (0, y_padding), (0, x_padding), (0, 0)],
+                                 [(0, z_padding), (0, y_padding),
+                                  (0, x_padding), (0, 0)],
                                  mode='constant')
 
     # Trim image and mask with stride
@@ -206,8 +252,10 @@ def trim_to_patches(image: np.ndarray,
                 x_start = x_start + trim_size_xy - stride
                 x_stop = x_start + trim_size_xy
 
-                img_name = str("{}_{}_{}_{}_{}.tif".format(idx, k, j, i, stride))
-                mask_name = str("{}_{}_{}_{}_{}_mask.tif".format(idx, k, j, i, stride))
+                img_name = str("{}_{}_{}_{}_{}.tif".format(
+                    idx, k, j, i, stride))
+                mask_name = str(
+                    "{}_{}_{}_{}_{}_mask.tif".format(idx, k, j, i, stride))
 
                 trim_img = image_padded[z_start:z_stop,
                                         y_start:y_stop,
@@ -223,11 +271,11 @@ def trim_to_patches(image: np.ndarray,
                                               y_start:y_stop,
                                               x_start:x_stop,
                                               :]
-                    tifffile.imwrite(join(output + r'\mask', mask_name),
+                    tifffile.imwrite(join(output, 'mask', mask_name),
                                      np.array(trim_mk, 'int8'))
 
                 if label_mask is not None:
-                    tifffile.imwrite(join(output + r'\imgs', img_name),
+                    tifffile.imwrite(join(output, 'imgs', img_name),
                                      np.array(trim_img, 'int8'))
                 else:
                     tifffile.imwrite(join(output, img_name),
