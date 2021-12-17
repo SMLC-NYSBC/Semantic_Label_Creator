@@ -2,6 +2,11 @@
 History
 =======
 
+0.3.4 (2021-11-28)
+-------------------
+* Added point downsamling 
+* Bug fix for calculating patch size when z dimension was bigger then image size
+
 0.3.3 (2021-11-28)
 -------------------
 * Quick changes for 0.3.3 for build graph tool.
