@@ -15,11 +15,11 @@ from slcpy.version import version
 
 @click.command()
 @click.option('-dir', '--dir_path',
-              default=getcwd() + r'\data',
+              default=join(getcwd(), 'data'),
               help='Directory to the folder which contains *.tif files.',
               show_default=True)
 @click.option('-o', '--output',
-              default=getcwd() + r'\data' + r'\output',
+              default=join(getcwd(), 'data', 'output'),
               help='Directory to the folder where results will be saved.',
               show_default=True)
 @click.option('-m', '--build_mask',
@@ -45,11 +45,11 @@ from slcpy.version import version
               help='Define if the input image has to be trim to fit labels.',
               show_default=True)
 @click.option('-xy', '--trim_size_xy',
-              default=64,
+              default=None,
               help='Define size in pixels of output images in xy.',
               show_default=None)
 @click.option('-z', '--trim_size_z',
-              default=64,
+              default=None,
               help='Define size in pixels of output images in z.',
               show_default=True)
 @click.option('-a', '--filter_empty_patches',
@@ -125,8 +125,8 @@ def main(dir_path,
                       leave=False)
 
     for file in batch_iter:
-        img_name = str(image_counter) + r'.tif'
-        mask_name = str(image_counter) + r'_mask.tif'
+        img_name = file
+        mask_name = file[:-4] + r'_mask.tif'
         image_counter += 1
 
         if file.endswith('.tif'):
@@ -145,26 +145,24 @@ def main(dir_path,
                 label_mask = None
 
             if trim_size_xy is None:
-                tifffile.imwrite(
-                    join(output + 'imgs', img_name),
-                    np.array(image, 'int8')
-                )
+                tifffile.imwrite(join(output, 'imgs', img_name),
+                                 np.array(image, 'int8'))
 
                 if build_mask:
-                    tifffile.imwrite(
-                        join(output + 'mask', mask_name),
-                        np.array(label_mask, 'int8')
-                    )
+                    tifffile.imwrite(join(output, 'mask', mask_name),
+                                     np.array(label_mask, 'int8'))
             else:
                 if filter_empty_patches:
-                    idx = trim_images(image=image, label_mask=label_mask,
+                    idx = trim_images(image=image, 
+                                      label_mask=label_mask,
                                       trim_size_xy=trim_size_xy,
                                       trim_size_z=trim_size_z,
                                       multi_layer=multi_classification,
                                       output=output,
                                       image_counter=idx)
                 else:
-                    idx = trim_to_patches(image=image, label_mask=label_mask,
+                    idx = trim_to_patches(image=image, 
+                                          label_mask=label_mask,
                                           trim_size_xy=trim_size_xy,
                                           trim_size_z=trim_size_z,
                                           multi_layer=multi_classification,

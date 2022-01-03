@@ -15,11 +15,11 @@ from slcpy.version import version
 
 @click.command()
 @click.option('-dir', '--dir_path',
-              default=getcwd() + r'\data',
+              default=join(getcwd() + 'data'),
               help='Directory to the folder which contains *.tif files.',
               show_default=True)
 @click.option('-o', '--output',
-              default=getcwd() + r'\data' + r'\output',
+              default=join(getcwd(), 'data', 'output'),
               help='Directory to the folder where results will be saved.',
               show_default=True)
 @click.option('-f', '--filter',

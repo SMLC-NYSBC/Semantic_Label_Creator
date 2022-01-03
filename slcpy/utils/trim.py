@@ -176,8 +176,8 @@ def trim_to_patches(image: np.ndarray,
             "trim_size_z should be equal or greater then X dimension!"
         assert ny >= trim_size_xy, \
             "trim_size_z should be equal or greater then Y dimension!"
-        if nz >= trim_size_z:
-            trim_size_z = nz
+        # if nz >= trim_size_z:
+        #     trim_size_z = nz
     else:
         assert stride is not None, \
             "Trim sizes or stride has to be indicated!"
@@ -191,8 +191,7 @@ def trim_to_patches(image: np.ndarray,
 
     x_padding, y_padding, z_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx, \
                                       (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny, \
-                                      (trim_size_z +
-                                       ((trim_size_z - stride) * (z - 1))) - nz
+                                      (trim_size_z + ((trim_size_z - stride) * (z - 1))) - nz
 
     # Adapt number of patches for trimming
     if trim_size_xy is not None or trim_size_z is not None:
