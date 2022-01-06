@@ -274,13 +274,13 @@ class ImportSemanticMask:
         return filter_coord
 
     def find_maximas(self,
-                     clean_close_point: int,
+                     clean_close_point=9,
                      filter_small_object: Optional[int] = None,
-                     down_sampling: Optional[int] = None):
+                     down_sampling=True):
         """At each z position find point maxims and store their coordinates"""
         x, y, z = [], [], []
 
-        if filter_small_object is None:
+        if filter_small_object is not None:
             denoise_img = np.zeros(self.image.shape, dtype='int16')
 
             z_iter = tqdm(range(self.image.shape[0]),
@@ -289,11 +289,15 @@ class ImportSemanticMask:
                           leave=False)
             for i in z_iter:
                 slice = self.image[i, :].astype('int16')
-                _, thresh = cv2.threshold(slice, 0, 255, cv2.THRESH_BINARY)
-                kernel = np.ones((7, 7),
-                                 np.int16)
-                denoise_img[i, :] = cv2.morphologyEx(
-                    thresh, cv2.MORPH_OPEN, kernel)
+                _, thresh = cv2.threshold(src=slice,
+                                          thresh=0,
+                                          maxval=255,
+                                          type=cv2.THRESH_BINARY)
+                kernel = np.ones(shape=(filter_small_object, filter_small_object),
+                                 dtype=np.int16)
+                denoise_img[i, :] = cv2.morphologyEx(src=thresh,
+                                                     op=cv2.MORPH_OPEN,
+                                                     kernel=kernel)
 
             denoise_img = abs(denoise_img.astype('int8'))
         else:
@@ -314,6 +318,7 @@ class ImportSemanticMask:
             picked_maxima = peak_local_max(dm_slice,
                                            labels=img_slice,
                                            min_distance=clean_close_point)
+            
             z = np.append(z, np.repeat(i, len(picked_maxima)))
             y = np.append(y, picked_maxima[:, 0])
             x = np.append(x, picked_maxima[:, 1])
@@ -322,7 +327,7 @@ class ImportSemanticMask:
 
         """ Down-sampling point cloud by removing closest point """
 
-        if down_sampling is not None:
+        if down_sampling:
             coordinates = self._remove_close_point(coordinates=coordinates,
                                                    voxal_z=5,
                                                    voxal_xy=2)

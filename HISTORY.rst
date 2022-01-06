@@ -5,6 +5,7 @@ History
 0.3.5 (2022-01-03)
 -------------------
 * HotFix for folder selection on MacOS
+* Bugfix in graph creation
 * Fix patch creation in Z -> not cutting patches in Z for given size
 
 0.3.4 (2021-11-28)
