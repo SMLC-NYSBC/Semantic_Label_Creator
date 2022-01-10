@@ -1,6 +1,5 @@
 from os import listdir, getcwd
 from os.path import join
-from time import sleep
 from typing import Optional
 
 import click
@@ -61,7 +60,6 @@ def main(dir_path: str,
         if file.endswith('.tif'):
             img, coords = slcpy_graph(dir_path=join(dir_path, file),
                                       filter_img=filter,
-                                      clean_graph=clean_graph,
                                       down_sampling=down_sampling)
             if save == "numpy":
                 np.save(join(output, file[:-4]),

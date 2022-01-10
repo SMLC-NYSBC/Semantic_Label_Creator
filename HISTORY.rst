@@ -7,6 +7,7 @@ History
 * HotFix for folder selection on MacOS
 * Bugfix in graph creation
 * Fix patch creation in Z -> not cutting patches in Z for given size
+* Added garbage collection in build graph to manage big files
 
 0.3.4 (2021-11-28)
 -------------------

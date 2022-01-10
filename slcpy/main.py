@@ -134,9 +134,8 @@ def slcpy_stitch(dir_path: str,
     return stitch_img
 
 
-def slcpy_graph(dir_path: str,
+def slcpy_graph(dir_path: str or np.ndarray,
                 filter_img: int,
-                clean_graph: int,
                 down_sampling: int):
     """
     MODULE TO BUILD POINT CLOUD FROM 3D .tiff FILES
@@ -150,7 +149,5 @@ def slcpy_graph(dir_path: str,
 
     img = ImportSemanticMask(src_tiff=dir_path)
 
-    denois_image, coord = img.find_maximas(filter_small_object=filter_img,
-                                           clean_close_point=clean_graph,
-                                           down_sampling=down_sampling)
-    return denois_image, coord
+    return img.find_maximas(filter_small_object=filter_img,
+                            down_sampling=down_sampling)

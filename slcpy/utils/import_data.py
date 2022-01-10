@@ -1,11 +1,13 @@
+import gc
 from os import path
 from typing import Optional
 
 import cv2
-import edt
 import numpy as np
+import open3d as o3d
 from skimage import io
-from skimage.feature import peak_local_max
+from skimage.feature.peak import peak_local_max
+from skimage.morphology import skeletonize_3d
 from tqdm import tqdm
 
 
@@ -150,11 +152,9 @@ class ImportDataFromAmira:
         """
 
         if self.pixel_size is None:
-            et = open(
-                self.src_tiff[:-3] + "am",
-                "r",
-                encoding="iso-8859-1"
-            )
+            et = open(self.src_tiff[:-3] + "am",
+                      "r",
+                      encoding="iso-8859-1")
 
             lines_in_et = et.read(50000).split("\n")
 
@@ -215,66 +215,19 @@ class ImportSemanticMask:
     """
 
     def __init__(self,
-                 src_tiff: str):
-
-        self.src_tiff = src_tiff
-
+                 src_tiff: Optional[str] = np.ndarray):
         try:
-            self.image = io.imread(self.src_tiff)
+            if isinstance(src_tiff, str):
+                self.image = io.imread(src_tiff)
+            else:
+                self.image = src_tiff
         except RuntimeWarning:
             raise Warning("Directory or input .tiff file is not correct...")
 
     def image_data(self):
         return self.image
 
-    def _remove_close_point(self,
-                            coordinates: np.ndarray,
-                            voxal_z: int,
-                            voxal_xy: int):
-        """
-        Filtering mechanism for point clouds.
-         - For each point find point with the same position but in pre-define
-            z frame. If points are found, remove all and replace with center point.
-         - Remove points that don't have any neighbors in 3D by pre-define dist.
-
-        Args:
-            point_cloud: [description]
-            dist_lonely_point: [description]
-        """
-        filter_coord = coordinates
-        z_iter = tqdm(range(len(coordinates)),
-                      'Building point cloud..',
-                      total=len(coordinates),
-                      leave=False)
-
-        for i in z_iter:
-            z, y, x = coordinates[i, :]
-
-            tmp_coord = coordinates[coordinates[:, 0] > (z - voxal_z)]
-            tmp_coord = tmp_coord[tmp_coord[:, 0] < (z + voxal_z)]
-            tmp_coord = tmp_coord[tmp_coord[:, 1] > (y - voxal_xy)]
-            tmp_coord = tmp_coord[tmp_coord[:, 1] < (y + voxal_xy)]
-            tmp_coord = tmp_coord[tmp_coord[:, 2] > (x - voxal_xy)]
-            tmp_coord = tmp_coord[tmp_coord[:, 2] < (x + voxal_xy)]
-
-            if len(tmp_coord) > 1:
-                for j in range(len(tmp_coord)):
-                    tmp = (filter_coord == tmp_coord[j, :])
-                    del_idx = np.where(
-                        np.einsum('i,i,i->i', tmp[:, 0], tmp[:, 1], tmp[:, 2]))
-                    filter_coord = np.delete(filter_coord, del_idx[0], axis=0)
-
-                z = round(np.mean(tmp_coord[:, 0]), 0).astype('int16')
-                y = round(np.mean(tmp_coord[:, 1]), 0).astype('int16')
-                x = round(np.mean(tmp_coord[:, 2]), 0).astype('int16')
-                tmp_coord = np.array((z, y, x)).astype('uint16').T
-
-                filter_coord = np.vstack((tmp_coord, filter_coord))
-
-        return filter_coord
-
     def find_maximas(self,
-                     clean_close_point=9,
                      filter_small_object: Optional[int] = None,
                      down_sampling=True):
         """At each z position find point maxims and store their coordinates"""
@@ -303,33 +256,32 @@ class ImportSemanticMask:
         else:
             denoise_img = self.image
 
-        """ Compute euclidean transformation for labels and build point cloud """
-        distance_matrix = edt.edt(denoise_img, parallel=0)
+        del self.image
+        gc.collect()
 
         x, y, z = [], [], []
+        sk_image = skeletonize_3d(denoise_img)
+        
         z_iter = tqdm(range(denoise_img.shape[0]),
                       'Building point cloud..',
                       total=denoise_img.shape[0],
                       leave=False)
-
+        
+        """ Compute euclidean transformation for labels and build point cloud """
         for i in z_iter:
-            img_slice = denoise_img[i, :]
-            dm_slice = distance_matrix[i, :]
-            picked_maxima = peak_local_max(dm_slice,
-                                           labels=img_slice,
-                                           min_distance=clean_close_point)
-            
+            picked_maxima = peak_local_max(sk_image[i, :],
+                                           labels=denoise_img[i, :])
+
             z = np.append(z, np.repeat(i, len(picked_maxima)))
             y = np.append(y, picked_maxima[:, 0])
             x = np.append(x, picked_maxima[:, 1])
 
-        coordinates = np.array((z, y, x)).astype('uint16').T
+        coordinates = np.array((x, y, z)).astype('uint16').T
 
         """ Down-sampling point cloud by removing closest point """
-
         if down_sampling:
-            coordinates = self._remove_close_point(coordinates=coordinates,
-                                                   voxal_z=5,
-                                                   voxal_xy=2)
+            pcd = o3d.geometry.PointCloud()
+            pcd.points = o3d.utility.Vector3dVector(coordinates)
+            coordinates = np.asarray(pcd.voxel_down_sample(voxel_size=25).points)
 
         return denoise_img, coordinates
