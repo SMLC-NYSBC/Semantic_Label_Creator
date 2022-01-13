@@ -74,21 +74,29 @@ Usage
 To use Semantic_Label_Creator in a project::
 
     from slcpy.main import slcpy
-    label_mask = slcpy(dir_path,
-                       pixel_size=None, circle_size=250,
-                       multi_layer=True, trim_mask=True, trim_size=256)
-
-    point_could = slcpy_graph(dir_path)
+    _, label_mask = slcpy_semantic(dir_path,
+                                   mask=Ture,
+                                   pixel_size=None, 
+                                   circle_size=250,
+                                   multi_layer=True, 
+                                   trim_mask=False, 
+                                   trim_size=64)
+                                   
+    point_could = slcpy_graph(dir_path=label_mask,
+                              filter_img=5,
+                              down_sampling=Ture)
 
 or with terminal to build semantic label::
 
-    slcpy_semantic -dir C:/... -o C:/.../output -px None -d 250 -l True -t True -xy 256
+    slcpy_semantic -dir C:/... -o C:/.../output 
 
  string [-dir] Directory of the folder that contain data.
     [-default] os.getcwd() + r'\data'
  string [-o]   Output directory to the folder where all of converted filed are stored.
     [-default] os.getcwd() + r'\data' + r'\output'
- int    [-px]  Anisotropic images pixel size in Angstrom.
+ bool   [-m]   Indicate if mask is included.
+    [-default] True
+ float  [-px]  Images pixel size in Angstrom. If None pixel size is calculated from image metadata
     [-default] None
  int    [-d]   Diameter in Angstrom of a circle that would be drawn a semantic mask
     [-default] 250
@@ -130,10 +138,8 @@ with terminal to build point cloud from image::
     [-default] os.getcwd() + r'\data' + r'\output'
  int    [-f]   Filter size matrix for denoising.
     [-default] 6
- int    [-c]   Clean graph from neighborhood points.
-    [-default] 3
- int    [-d]   Down-sample point cloud by the factor of.
-    [-default] None
+ bool   [-d]   Down-sample point cloud by the factor of.
+    [-default] True
  string [-s]   Define format of output point cloud.
     [-default] all
     [-option] all, csv, numpy
