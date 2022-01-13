@@ -8,16 +8,16 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['click>=8.0.1',
+requirements = ['click>=8.0.3',
                 'setuptools>=57.1.0',
-                'scikit-image>=0.18.2',
-                'numpy>=1.21.0',
+                'scikit-image>=0.19.1',
+                'numpy>=1.20.0',
                 'tifffile>=2021.7.2',
-                'tqdm>=4.61.1',
-                'imagecodecs>=2021.6.8',
-                'edt>=2.1.1',
-                'opencv-python>=4.5.0',
-                'scipy>=1.7.0']
+                'tqdm>=4.62.3',
+                'imagecodecs>=2021.8.26',
+                'opencv-python>=4.5.4.60',
+                'scipy>=1.7.3',
+                'open3d>=0.14.1']
 
 setup(author="Robert Kiewisz",
       author_email='robert.kiewisz@gmail.com',

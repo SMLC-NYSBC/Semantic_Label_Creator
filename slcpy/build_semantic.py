@@ -1,7 +1,6 @@
-from os import mkdir, rename, listdir, getcwd
+from os import getcwd, listdir, mkdir, rename
 from os.path import isdir, join
 from shutil import rmtree
-from time import sleep
 
 import click
 import numpy as np
@@ -52,7 +51,7 @@ from slcpy.version import version
               default=None,
               help='Define size in pixels of output images in z.',
               show_default=True)
-@click.option('-a', '--filter_empty_patches',
+@click.option('-f', '--filter_empty_patches',
               default=False,
               help='If True only images containing any data are saved.',
               show_default=True)
@@ -75,22 +74,22 @@ def main(dir_path,
     MAIN MODULE FOR COMPOSING SEMANTIC LABEL FROM GIVEN POINT CLOUD
 
     Args:
-        -dir / dir_path: Directory to the folder with image dataset.
-        -o / output: Output directory for saving transformed files.
-        -m / build_mask: Define if the semantic mask should be build and saved.
-        -px / pixel_size: Pixel size for all images. Note that if images has
+        dir_path: Directory to the folder with image dataset.
+        output: Output directory for saving transformed files.
+        build_mask: Define if the semantic mask should be build and saved.
+        pixel_size: Pixel size for all images. Note that if images has
             different pixel size set to None to automatically calculate it
             for each image.
-       -d / circle_size: Size of drawn circle in Angstrom.
-       -l / multi_classification: If True as an output each line is drawn
+        circle_size: Size of drawn circle in Angstrom.
+        multi_classification: If True as an output each line is drawn
             with unique label.
-       -t / pretrim_mask: If True the image mask will be trimmed before
+        pretrim_mask: If True the image mask will be trimmed before
             building label
             mask. It's helpful for big files to speed up computation.
-       -xy / trim_size_xy: Final XY dimension of output images.
-       -z / time_size_z: Final Z dimension of output images.
-       -a / filter_empty_patches: Use whole image for trimming
-       -s / stride: stride for patch step size with overlay
+        trim_size_xy: Final XY dimension of output images.
+        time_size_z: Final Z dimension of output images.
+        filter_empty_patches: Use whole image for trimming
+        stride: stride for patch step size with overlay
     """
 
     if isdir(output):
@@ -126,7 +125,7 @@ def main(dir_path,
 
     for file in batch_iter:
         img_name = file
-        mask_name = file[:-4] + r'_mask.tif'
+        mask_name = file[:-4] + '_mask.tif'
         image_counter += 1
 
         if file.endswith('.tif'):
@@ -153,7 +152,7 @@ def main(dir_path,
                                      np.array(label_mask, 'int8'))
             else:
                 if filter_empty_patches:
-                    idx = trim_images(image=image, 
+                    idx = trim_images(image=image,
                                       label_mask=label_mask,
                                       trim_size_xy=trim_size_xy,
                                       trim_size_z=trim_size_z,
@@ -161,7 +160,7 @@ def main(dir_path,
                                       output=output,
                                       image_counter=idx)
                 else:
-                    idx = trim_to_patches(image=image, 
+                    idx = trim_to_patches(image=image,
                                           label_mask=label_mask,
                                           trim_size_xy=trim_size_xy,
                                           trim_size_z=trim_size_z,

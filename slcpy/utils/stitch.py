@@ -8,6 +8,8 @@ from tqdm import tqdm
 
 class StitchImages:
     """
+    MAIN MODULE TO STITCH IMAGE FROM IMAGE PATCHES 
+
     Class object to stitch cut date into one big image. Object recognize images
     with naming 1_1_1_25 where 1 indicate xyz position and 25 indicate stride.
 
@@ -29,11 +31,16 @@ class StitchImages:
         # Extract information about images in dir_path
         file_list = [f for f in listdir(dir_path) if isfile(join(dir_path, f))]
 
-        self.idx = max(list(map(int, [str.split(f[:-4], "_")[0] for f in file_list])))
-        self.x = max(list(map(int, [str.split(f[:-4], "_")[1] for f in file_list])))
-        self.y = max(list(map(int, [str.split(f[:-4], "_")[2] for f in file_list])))
-        self.z = max(list(map(int, [str.split(f[:-4], "_")[3] for f in file_list])))
-        self.stride = max(list(map(int, [str.split(f[:-4], "_")[4] for f in file_list])))
+        self.idx = max(
+            list(map(int, [str.split(f[:-4], "_")[0] for f in file_list])))
+        self.x = max(
+            list(map(int, [str.split(f[:-4], "_")[1] for f in file_list])))
+        self.y = max(
+            list(map(int, [str.split(f[:-4], "_")[2] for f in file_list])))
+        self.z = max(
+            list(map(int, [str.split(f[:-4], "_")[3] for f in file_list])))
+        self.stride = max(
+            list(map(int, [str.split(f[:-4], "_")[4] for f in file_list])))
 
         return file_list
 
@@ -100,9 +107,11 @@ class StitchImages:
                     img = tifffile.imread(img_dir)
                     assert img.shape == (self.nz, self.ny, self.nx)
                     if mask:
-                        stitched_image[z_start:z_stop, y_start:y_stop, x_start:x_stop] += img
+                        stitched_image[z_start:z_stop,
+                                       y_start:y_stop, x_start:x_stop] += img
                     else:
-                        stitched_image[z_start:z_stop, y_start:y_stop, x_start:x_stop] = img
+                        stitched_image[z_start:z_stop,
+                                       y_start:y_stop, x_start:x_stop] = img
 
                     img_counter += 1
         return stitched_image

@@ -5,7 +5,7 @@ def interpolation_1D(start: int,
                      stop: int,
                      max_len: int):
     """
-    Module to build a continues segment in given 3D frame
+    1D INTERPOLATION FOR BUILDING SEMANTIC MASK
 
     Args:
         start: 1D single coordinate to start interpolation
@@ -25,7 +25,7 @@ def interpolation_1D(start: int,
 
 def interpolation_3D(points: np.ndarray):
     """
-    Module: interpolation_3D
+    3D INTERPOLATION FOR BUILDING SEMANTIC MASK
 
     Args:
         points: numpy array with points belonging to individual segments given

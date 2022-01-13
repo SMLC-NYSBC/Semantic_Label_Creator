@@ -13,11 +13,12 @@ from tqdm import tqdm
 
 class ImportDataFromAmira:
     """
-    Class module to load 3D .tif file
+    MAIN CLASS TO HANDLE 3D .TIF AND .AM DATA
 
     Args:
         src_tiff: source of the 3D .tif file
         src_am: source of the spatial graph for corresponding 3D .tif
+        mask: If True output semnantic mask
         pixel_size: numeric value of pixel size
     """
 
@@ -205,13 +206,12 @@ class ImportDataFromAmira:
 
 class ImportSemanticMask:
     """
-    Class module to load 3D .tif file
+    MAIN MODULE TO LOAD SEMANTIC MASK
 
     Args:
         src_tiff: source of the 3D .tif file
         filter_small_object: Filter size to remove small object .
         clean_close_point: If True, close point will be removed.
-
     """
 
     def __init__(self,
@@ -261,12 +261,12 @@ class ImportSemanticMask:
 
         x, y, z = [], [], []
         sk_image = skeletonize_3d(denoise_img)
-        
+
         z_iter = tqdm(range(denoise_img.shape[0]),
                       'Building point cloud..',
                       total=denoise_img.shape[0],
                       leave=False)
-        
+
         """ Compute euclidean transformation for labels and build point cloud """
         for i in z_iter:
             picked_maxima = peak_local_max(sk_image[i, :],
@@ -282,6 +282,9 @@ class ImportSemanticMask:
         if down_sampling:
             pcd = o3d.geometry.PointCloud()
             pcd.points = o3d.utility.Vector3dVector(coordinates)
-            coordinates = np.asarray(pcd.voxel_down_sample(voxel_size=25).points)
+            coordinates_ds = np.asarray(
+                pcd.voxel_down_sample(voxel_size=25).points)
+
+            return denoise_img, coordinates, coordinates_ds
 
         return denoise_img, coordinates

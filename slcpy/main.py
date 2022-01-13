@@ -30,6 +30,7 @@ def trim_label_mask(points: np.ndarray,
     image_trim = image[int(min_z):int(max_z),
                        int(min_y):int(max_y),
                        int(min_x):int(max_x)]
+
     label_mask_trim = label_mask[int(min_z):int(max_z),
                                  int(min_y):int(max_y),
                                  int(min_x):int(max_x)]
@@ -44,19 +45,19 @@ def trim_label_mask(points: np.ndarray,
 def slcpy_semantic(dir_path: str,
                    mask: bool,
                    pixel_size=None,
-                   circle_size=125,
+                   circle_size=250,
                    multi_layer=False,
-                   trim_mask=True):
+                   trim_mask=False):
     """
     MODULE TO LOAD 3D .tif FILES WITH CORRESPONDING .am FILES
 
     Args:
         dir_path: path direction of the input file *.tif
-        mask: If True 
+        mask: If True semantic mask is created
         pixel_size: pixel size in Angstrom
         circle_size: size of a circle the label mask in Angstrom
-        trim_mask: True/False statement for trimming input data
         multi_layer: single, or unique value for each lines
+        trim_mask: If True input data are trimed to the point cloud
     """
     print(" Converting image {}".format(dir_path))
     img = ImportDataFromAmira(
@@ -136,15 +137,14 @@ def slcpy_stitch(dir_path: str,
 
 def slcpy_graph(dir_path: str or np.ndarray,
                 filter_img: int,
-                down_sampling: int):
+                down_sampling: bool):
     """
     MODULE TO BUILD POINT CLOUD FROM 3D .tiff FILES
 
     Args:
         dir_path: Path direction of the input file *.tif with semantic masks.
-        filter_img: Filter size for cleaning lonely pixels.
-        clean_graph: Min number of pixels between each coord can be picked
-        down_sampling: Number of downsample iterations.
+        filter_img: Remove object that are smaller then given pixel size.
+        down_sampling: If True downsampling is perform on build point cloud.
     """
 
     img = ImportSemanticMask(src_tiff=dir_path)

@@ -1,9 +1,7 @@
-from os import listdir, getcwd
+from os import getcwd, listdir
 from os.path import join
-from typing import Optional
 
 import click
-from click.core import Option
 import numpy as np
 from tifffile import tifffile
 from tqdm import tqdm
@@ -25,10 +23,6 @@ from slcpy.version import version
               default=6,
               help='Filter size matrix for denoising.',
               show_default=True)
-@click.option('-c', '--clean_graph',
-              default=10,
-              help='Clean graph from neighborhood points.',
-              show_default=True)
 @click.option('-d', '--down_sampling',
               default=0,
               help='Down-sample point cloud by the factor of...',
@@ -42,40 +36,59 @@ from slcpy.version import version
 def main(dir_path: str,
          output: str,
          filter: int,
-         clean_graph: int,
          save: str,
-         down_sampling: Optional[int]=None):
+         down_sampling: bool):
     """
     MAIN MODULE FOR EXTRACTING POINT CLOUD FROM SEMANTIC LABEL
 
     Args:
-        -dir / dir_path: Directory to the folder with image dataset.
-        -o / output: Output directory for saving transformed files.
-        -f / filter: filter size matrix for denoising
-        -c /clean_graph: Clean graph from neighborhood points.
-        -s / save: select type of saved data other numpy .npy or .csv
+        dir_path: Directory to the folder with image dataset.
+        output: Output directory for saving transformed files.
+        filter: filter size matrix for denoising
+        clean_graph: Clean graph from neighborhood points.
+        save: select type of saved data other numpy .npy or .csv
     """
 
     for file in tqdm(listdir(dir_path)):
         if file.endswith('.tif'):
-            img, coords = slcpy_graph(dir_path=join(dir_path, file),
-                                      filter_img=filter,
-                                      down_sampling=down_sampling)
+            if down_sampling:
+                img, coords_HD, coords_LD = slcpy_graph(dir_path=join(dir_path, file),
+                                                        filter_img=filter,
+                                                        down_sampling=down_sampling)
+            else:
+                img, coords_HD = slcpy_graph(dir_path=join(dir_path, file),
+                                             filter_img=filter,
+                                             down_sampling=down_sampling)
+
             if save == "numpy":
-                np.save(join(output, file[:-4]),
-                        coords)
+                np.save(join(output, file[:-4] + '_HD'),
+                        coords_HD)
+                if down_sampling:
+                    np.save(join(output, file[:-4] + '_LD'),
+                            coords_LD)
             elif save == "csv":
-                np.savetxt(join(output, str(file[:-4] + ".csv")),
-                           coords,
+                np.savetxt(join(output, str(file[:-4] + '_HD' + ".csv")),
+                           coords_HD,
                            delimiter=",")
+                if down_sampling:
+                    np.savetxt(join(output, str(file[:-4] + '_LD' + ".csv")),
+                               coords_LD,
+                               delimiter=",")
             elif save == "all":
                 tifffile.imwrite(join(output, file[:-4] + '_denoise.tif'),
                                  np.array(img, 'int8'))
                 np.save(join(output, file[:-4]),
-                        coords)
+                        coords_HD)
                 np.savetxt(join(output, str(file[:-4] + ".csv")),
-                           coords,
+                           coords_HD,
                            delimiter=",")
+
+                if down_sampling:
+                    np.save(join(output, file[:-4] + '_LD'),
+                            coords_LD)
+                    np.savetxt(join(output, str(file[:-4] + + '_LD' + ".csv")),
+                               coords_LD,
+                               delimiter=",")
 
 
 if __name__ == '__main__':

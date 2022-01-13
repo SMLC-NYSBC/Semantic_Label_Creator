@@ -2,6 +2,11 @@
 History
 =======
 
+0.3.6 (2022-01-13)
+-------------------
+* Include Open3d library for point downsampling
+* Maintenance update
+
 0.3.5 (2022-01-03)
 -------------------
 * HotFix for folder selection on MacOS

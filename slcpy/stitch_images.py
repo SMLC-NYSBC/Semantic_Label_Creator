@@ -45,12 +45,12 @@ def main(dir_path: str,
     Main module for stitch individual images into montaged image
 
     Args:
-        -dir / dir_path: Directory to the folder with image dataset.
-        -o / output: Output directory for saving transformed files.
-        -m / mask: Indicate if stitched images are mask or images.
-        -pf / prefix: if not None, indicate additional file prefix.
-        -b / binary: If True transform date to binary format.
-        -dt /dtype: Data format type.
+        dir_path: Directory to the folder with image dataset.
+        output: Output directory for saving transformed files.
+        mask: Indicate if stitched images are mask or images.
+        prefix: if not None, indicate additional file prefix.
+        binary: If True transform date to binary format.
+        dtype: Data format type.
     """
 
     stitched_image = slcpy_stitch(dir_path,

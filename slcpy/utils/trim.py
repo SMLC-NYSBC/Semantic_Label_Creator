@@ -1,5 +1,4 @@
 import math
-
 from os.path import join
 from typing import Optional
 
@@ -60,8 +59,8 @@ def trim_images(image: np.ndarray,
         for j in range(1, x_axis + 1):
             nx_start += trim_size_xy
             nx_end += trim_size_xy
-            img_name = str(idx) + r'.tif'
-            mask_name = str(idx) + r'_mask.tif'
+            img_name = str(idx) + '.tif'
+            mask_name = str(idx) + '_mask.tif'
             trim_img = np.zeros((trim_size_z,
                                  trim_size_xy,
                                  trim_size_xy))
@@ -176,8 +175,6 @@ def trim_to_patches(image: np.ndarray,
             "trim_size_z should be equal or greater then X dimension!"
         assert ny >= trim_size_xy, \
             "trim_size_z should be equal or greater then Y dimension!"
-        # if nz >= trim_size_z:
-        #     trim_size_z = nz
     else:
         assert stride is not None, \
             "Trim sizes or stride has to be indicated!"
