@@ -259,7 +259,6 @@ class ImportSemanticMask:
         del self.image
         gc.collect()
 
-        x, y, z = [], [], []
         sk_image = skeletonize_3d(denoise_img)
 
         z_iter = tqdm(range(denoise_img.shape[0]),
@@ -268,15 +267,11 @@ class ImportSemanticMask:
                       leave=False)
 
         """ Compute euclidean transformation for labels and build point cloud """
-        for i in z_iter:
-            picked_maxima = peak_local_max(sk_image[i, :],
-                                           labels=denoise_img[i, :])
+        picked_maxima = np.where(sk_image > 0)
 
-            z = np.append(z, np.repeat(i, len(picked_maxima)))
-            y = np.append(y, picked_maxima[:, 0])
-            x = np.append(x, picked_maxima[:, 1])
-
-        coordinates = np.array((x, y, z)).astype('uint16').T
+        coordinates = np.array((picked_maxima[0],
+                                picked_maxima[1],
+                                picked_maxima[2])).astype('uint16').T
 
         """ Down-sampling point cloud by removing closest point """
         if down_sampling:
