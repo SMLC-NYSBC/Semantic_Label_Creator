@@ -7,39 +7,7 @@ from slcpy.utils.build_label_mask import draw_label
 from slcpy.utils.import_data import ImportDataFromAmira, ImportSemanticMask
 from slcpy.utils.interpolation import interpolation_3D
 from slcpy.utils.stitch import StitchImages
-
-
-def trim_label_mask(points: np.ndarray,
-                    image: np.ndarray,
-                    label_mask: np.ndarray):
-    """
-    MODULE TO TRIM CREATED IMAGES AND MASK
-
-    Args:
-        points: 3D coordinates of pitons
-        image: corresponding image for the labels
-        label_mask: empty label mask
-    """
-    max_x, min_x = max(points[:, 0]), min(points[:, 0])
-    max_y, min_y = max(points[:, 1]), min(points[:, 1])
-    max_z, min_z = max(points[:, 2]), min(points[:, 2])
-
-    if min_z < 0:
-        min_z = 0
-
-    image_trim = image[int(min_z):int(max_z),
-                       int(min_y):int(max_y),
-                       int(min_x):int(max_x)]
-
-    label_mask_trim = label_mask[int(min_z):int(max_z),
-                                 int(min_y):int(max_y),
-                                 int(min_x):int(max_x)]
-
-    points[:, 0] = points[:, 0] - min_x
-    points[:, 1] = points[:, 1] - min_y
-    points[:, 2] = points[:, 2] - min_z
-
-    return image_trim, label_mask_trim, points
+from slcpy.utils.trim import trim_label_mask
 
 
 def slcpy_semantic(dir_path: str,
@@ -72,7 +40,7 @@ def slcpy_semantic(dir_path: str,
 
         if pixel_size is None:
             pixel_size = img.pixel_size_in_et()
-            print(" Detected pixel size was {}".format(pixel_size))
+            print(" Detected pixel size is {}".format(pixel_size))
 
         segments = img.get_segments()
         points = img.get_points().round()
@@ -94,8 +62,6 @@ def slcpy_semantic(dir_path: str,
                           total=len(segments),
                           leave=False)
         for i in batch_iter:
-            sleep(0.001)
-
             start_point = int(sum(segments[0:i]))
             stop_point = start_point + int(segments[i])
             mt = interpolation_3D(points[start_point:stop_point])

@@ -8,7 +8,8 @@ def draw_label(r: int,
                segment_color: list):
     """
     Module draw_label to construct shape of a label
-
+    TODO: Redo drawing in 3D!!!
+    
     Args:
         r: radius of a circle in Angstrom
         c: point in 3D indicating center of a circle

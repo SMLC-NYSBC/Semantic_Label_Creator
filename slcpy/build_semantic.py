@@ -151,6 +151,8 @@ def main(dir_path,
                     tifffile.imwrite(join(output, 'mask', mask_name),
                                      np.array(label_mask, 'int8'))
             else:
+                trim_size_xy = int(trim_size_xy)
+                trim_size_z = int(trim_size_z)
                 if filter_empty_patches:
                     idx = trim_images(image=image,
                                       label_mask=label_mask,

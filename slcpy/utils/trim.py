@@ -26,7 +26,7 @@ def trim_images(image: np.ndarray,
         image_counter: number id of image
     """
     idx = image_counter + 1
-
+    
     if multi_layer:
         nz, ny, nx, nc = label_mask.shape
     elif multi_layer is False and label_mask is not None:
@@ -35,7 +35,7 @@ def trim_images(image: np.ndarray,
     else:
         nz, ny, nx = image.shape
         nc = None
-
+    
     x_axis, y_axis = nx // trim_size_xy, ny // trim_size_xy
     nz_axis = nz // 2
 
@@ -188,7 +188,8 @@ def trim_to_patches(image: np.ndarray,
 
     x_padding, y_padding, z_padding = (trim_size_xy + ((trim_size_xy - stride) * (x - 1))) - nx, \
                                       (trim_size_xy + ((trim_size_xy - stride) * (y - 1))) - ny, \
-                                      (trim_size_z + ((trim_size_z - stride) * (z - 1))) - nz
+                                      (trim_size_z +
+                                       ((trim_size_z - stride) * (z - 1))) - nz
 
     # Adapt number of patches for trimming
     if trim_size_xy is not None or trim_size_z is not None:
@@ -278,3 +279,36 @@ def trim_to_patches(image: np.ndarray,
                                      np.array(trim_img, 'int8'))
     idx += 1
     return idx
+
+
+def trim_label_mask(points: np.ndarray,
+                    image: np.ndarray,
+                    label_mask: np.ndarray):
+    """
+    MODULE TO TRIM CREATED IMAGES AND MASK
+
+    Args:
+        points: 3D coordinates of pitons
+        image: corresponding image for the labels
+        label_mask: empty label mask
+    """
+    max_x, min_x = max(points[:, 0]), min(points[:, 0])
+    max_y, min_y = max(points[:, 1]), min(points[:, 1])
+    max_z, min_z = max(points[:, 2]), min(points[:, 2])
+
+    if min_z < 0:
+        min_z = 0
+
+    image_trim = image[int(min_z):int(max_z),
+                       int(min_y):int(max_y),
+                       int(min_x):int(max_x)]
+
+    label_mask_trim = label_mask[int(min_z):int(max_z),
+                                 int(min_y):int(max_y),
+                                 int(min_x):int(max_x)]
+
+    points[:, 0] = points[:, 0] - min_x
+    points[:, 1] = points[:, 1] - min_y
+    points[:, 2] = points[:, 2] - min_z
+
+    return image_trim, label_mask_trim, points
