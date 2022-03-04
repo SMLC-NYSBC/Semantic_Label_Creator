@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 import open3d as o3d
 from skimage import io
-from skimage.feature.peak import peak_local_max
 from skimage.morphology import skeletonize_3d
 from tqdm import tqdm
 
@@ -22,21 +21,24 @@ class ImportDataFromAmira:
         pixel_size: numeric value of pixel size
     """
 
-    def __init__(self, src_tiff: str,
+    def __init__(self,
                  src_am: str,
-                 mask: bool,
+                 src_tiff: Optional[str] = None,
+                 mask=True,
                  pixel_size=None):
         self.src_tiff = src_tiff
         self.src_am = src_am
         self.pixel_size = pixel_size
 
-        try:
-            self.image = io.imread(self.src_tiff)  # Image file [Z x Y x X]
-        except RuntimeWarning:
-            raise Warning("Directory or input .tiff file is not correct...")
+        if self.src_tiff is not None:
+            try:
+                self.image = io.imread(self.src_tiff)  # Image file [Z x Y x X]
+            except RuntimeWarning:
+                raise Warning(
+                    "Directory or input .tiff file is not correct...")
 
-        if not path.isfile(self.src_tiff[:-3] + "am"):
-            raise Warning("Missing corresponding .am file...")
+            if not path.isfile(self.src_tiff[:-3] + "am"):
+                raise Warning("Missing corresponding .am file...")
 
         if mask:
             self.spatial_graph = open(
@@ -202,6 +204,9 @@ class ImportDataFromAmira:
             points_coord), 2] - transformation[2]
 
         return points_coord / pixel_size
+
+    def get_raw_point(self):
+        return self.__find_points()
 
 
 class ImportSemanticMask:
