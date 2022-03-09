@@ -29,8 +29,8 @@ def slcpy_semantic(dir_path: str,
     """
     print(" Converting image {}".format(dir_path))
     img = ImportDataFromAmira(
-        dir_path,
-        dir_path[:-3] + r"CorrelationLines.am",
+        src_tiff=dir_path,
+        src_am=dir_path[:-3] + r"CorrelationLines.am",
         mask=mask,
         pixel_size=pixel_size)
     image = img.image_data()
